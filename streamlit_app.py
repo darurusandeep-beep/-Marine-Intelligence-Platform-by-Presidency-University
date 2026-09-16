@@ -2,7 +2,6 @@ import streamlit as st
 from groq import Groq
 import requests
 from datetime import datetime
-from zoneinfo import Zoneinfo
 import folium
 from streamlit_folium import st_folium
 from urllib.parse import quote
@@ -12,7 +11,7 @@ import re
 import io
 import hashlib
 import json
-import os
+
 
 # ====================== CONFIG ======================
 try:
