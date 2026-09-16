@@ -2,6 +2,7 @@ import streamlit as st
 from groq import Groq
 import requests
 from datetime import datetime
+from zoneinfo import Zoneinfo
 import folium
 from streamlit_folium import st_folium
 from urllib.parse import quote
@@ -25,8 +26,8 @@ if not GROQ_API_KEY:
 
 client = Groq(api_key="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")
 
-WHATSAPP_NUMBER = "919876543210"
-PHONE_NUMBER = "+919876543210"
+WHATSAPP_NUMBER = "1554"
+PHONE_NUMBER = "1554"
 
 # Coastal locations with primary departure fishing harbour coordinates
 LOCATIONS = {
@@ -1162,7 +1163,7 @@ st.markdown(
 )
 
 now = datetime.now()
-st.title("🌊 Marine Intelligence Platform bY Presidency university")
+st.title("🌊 Marine Intelligence Platform")
 st.markdown(f"### 📅 {now.strftime('%d %B %Y')} &nbsp;&nbsp;|&nbsp;&nbsp; 🕒 {now.strftime('%I:%M %p')}")
 st.write("Instant agentic platform with intelligent marine NLP, satellite maps, multi-route navigation, **Alert Agent** & voice assistance.")
 st.divider()
@@ -1192,7 +1193,7 @@ st.divider()
 
 # Sidebar
 with st.sidebar:
-    st.header("Language")
+    st.header("🌐 Language")
     language = st.radio(
         "Select Language",
         ["English", "Hindi"],
@@ -1201,7 +1202,7 @@ with st.sidebar:
     st.session_state.language = language
 
     st.markdown("---")
-    st.header("Voice & Speech")
+    st.header("🔊 Voice & Speech")
     st.session_state.auto_speak = st.toggle(
         "Auto-Speak Responses",
         value=st.session_state.auto_speak,
@@ -1209,9 +1210,20 @@ with st.sidebar:
     )
 
     st.markdown("---")
-    # Vessel Cruising Speed section removed as requested
+    st.header("🚤 Vessel Cruising Speed")
+    speed_option = st.selectbox(
+        "Select Trawler / Boat Type",
+        [
+            "Motorized Boat (8 knots / ~15 km/h)",
+            "Mechanized Trawler (10 knots / ~18.5 km/h)",
+            "Fiber Speedboat (16 knots / ~30 km/h)"
+        ],
+        index=1
+    )
+    st.session_state.boat_speed_knots = 8 if "8 knots" in speed_option else 16 if "16 knots" in speed_option else 10
 
-    st.header("24×7 Marine Helpline")
+    st.markdown("---")
+    st.header("🆘 24×7 Marine Helpline")
     whatsapp_msg = quote("Hello, I need urgent fishing advisory / sea condition help.")
     st.link_button("💬 Chat on WhatsApp", f"https://wa.me/{WHATSAPP_NUMBER}?text={whatsapp_msg}", use_container_width=True)
 
@@ -1494,15 +1506,66 @@ with st.container(key="chat_dock_container"):
         unsafe_allow_html=True
     )
 
-    input_col, send_col = st.columns([6.0, 1.0])
+    input_col, mic_col, send_col = st.columns([5.0, 1.8, 1.0])
 
     with input_col:
         st.text_input(
             "Marine Question",
-            placeholder="Type question or use the Voice Recorder below (e.g., Hi, Is it safe to fish in Goa?, Show alerts)...",
+            placeholder="Type question or click 🎙️ Speak (e.g., Hi, Is it safe to fish in Goa?, Show alerts)...",
             key="user_typed_input",
             on_change=submit_text,
             label_visibility="collapsed"
+        )
+
+    with mic_col:
+        speech_lang = "en-IN" if st.session_state.language == "English" else "hi-IN"
+        st.markdown(
+            f"""
+            <button id="dock-speech-btn" onclick="
+                var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+                if (!SR) {{
+                    alert('Live voice recognition requires Chrome, Edge, or Safari. For other browsers, please use the Voice Recorder tab below.');
+                    return;
+                }}
+                var b = this;
+                var origBg = '#0284c7';
+                var origHtml = '🎙️ Live Speak';
+                b.style.backgroundColor = '#dc2626';
+                b.style.boxShadow = '0 0 20px rgba(220, 38, 38, 0.9)';
+                b.innerHTML = '🔴 Listening...';
+                var r = new SR();
+                r.lang = '{speech_lang}';
+                r.interimResults = true;
+                r.maxAlternatives = 1;
+                var finalRecognized = '';
+                r.onresult = function(e) {{
+                    if (e.results && e.results.length > 0) {{
+                        var text = e.results[0][0].transcript;
+                        b.innerHTML = '🔴 ' + text.substring(0, 14) + '...';
+                        if (e.results[0].isFinal) {{
+                            finalRecognized = text;
+                            b.style.backgroundColor = '#16a34a';
+                            b.innerHTML = '✅ Transcribing...';
+                            if (window.submitMarinePrompt) {{
+                                window.submitMarinePrompt(text, true);
+                            }}
+                        }}
+                    }}
+                }};
+                r.onerror = function(e) {{
+                    b.style.backgroundColor = '#eab308';
+                    b.innerHTML = '⚠️ Retry';
+                    setTimeout(function(){{ b.style.backgroundColor = origBg; b.style.boxShadow = 'none'; b.innerHTML = origHtml; }}, 2500);
+                }};
+                r.onend = function() {{
+                    setTimeout(function(){{ if (!finalRecognized) {{ b.style.backgroundColor = origBg; b.style.boxShadow = 'none'; b.innerHTML = origHtml; }} }}, 2000);
+                }};
+                r.start();
+            " style="width:100%; height:42px; background:#0284c7; color:white; border:none; border-radius:10px; font-weight:700; font-size:0.9rem; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px; box-shadow:0 4px 12px rgba(2,132,199,0.3); transition:all 0.2s ease;">
+                🎙️ Live Speak
+            </button>
+            """,
+            unsafe_allow_html=True
         )
 
     with send_col:
