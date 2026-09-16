@@ -114,22 +114,29 @@ def get_audio_filename_and_mime(audio_bytes, original_name=None, mime_type=None)
         return "voice_input.wav", "audio/wav"
 
     header = audio_bytes[:12]
+    # Check EBML header for WebM / Matroska (\x1a\x45\xdf\xa3)
     if header.startswith(b"\x1aE\xdf\xa3") or b"webm" in audio_bytes[:64].lower():
         return "voice_input.webm", "audio/webm"
+    # Check WAV (RIFF....WAVE)
     if header.startswith(b"RIFF") and len(header) >= 12 and header[8:12] == b"WAVE":
         return "voice_input.wav", "audio/wav"
+    # Check OGG
     if header.startswith(b"OggS"):
         return "voice_input.ogg", "audio/ogg"
+    # Check MP3
     if header.startswith(b"ID3") or header[:2] in [b"\xff\xfb", b"\xff\xf3", b"\xff\xf2"]:
         return "voice_input.mp3", "audio/mpeg"
+    # Check MP4 / M4A
     if len(header) >= 8 and header[4:8] == b"ftyp":
         return "voice_input.mp4", "audio/mp4"
 
+    # Check original name extension if provided
     if original_name and "." in original_name:
         ext = original_name.rsplit(".", 1)[-1].lower()
         if ext in ["webm", "wav", "mp3", "ogg", "mp4", "m4a"]:
             return f"voice_input.{ext}", mime_type or f"audio/{ext}"
 
+    # Default fallback for Chrome / Edge MediaRecorder
     return "voice_input.webm", "audio/webm"
 
 def transcribe_voice_query(audio_bytes, language="English"):
@@ -140,6 +147,7 @@ def transcribe_voice_query(audio_bytes, language="English"):
     filename, mime_type = get_audio_filename_and_mime(audio_bytes)
     lang_code = "en" if language == "English" else "hi"
 
+    # Try whisper-large-v3-turbo first, then whisper-large-v3
     for model_name in ["whisper-large-v3-turbo", "whisper-large-v3"]:
         try:
             audio_file_tuple = (filename, audio_bytes, mime_type)
@@ -154,6 +162,7 @@ def transcribe_voice_query(audio_bytes, language="English"):
                 return text
         except Exception:
             try:
+                # Retry without language constraint (Whisper auto-detects language)
                 audio_file_tuple = (filename, audio_bytes, mime_type)
                 transcription = client.audio.transcriptions.create(
                     file=audio_file_tuple,
@@ -263,6 +272,7 @@ def alert_agent(weather_info, location_name, language="English"):
     temp = weather_info.get("temperature", "--")
     prediction = weather_info.get("prediction", "")
 
+    # Determine alert level
     if wind >= 30 or safety == "Not Safe":
         level = "CRITICAL"
         color = "#DC2626"
@@ -338,6 +348,7 @@ def alert_agent(weather_info, location_name, language="English"):
             )
             action = "सुरक्षित और सफल यात्रा हो। समय-समय पर स्थितियों की निगरानी करते रहें।"
 
+    # WhatsApp ready text (plain)
     if language == "English":
         whatsapp_text = (
             f"🌊 MARINE ALERT — {location_name}\n"
@@ -389,13 +400,14 @@ def generate_active_alerts(language="English"):
             alert = alert_agent(weather, name, language)
             if alert["level"] in ["CRITICAL", "WARNING", "ADVISORY"]:
                 active.append(alert)
+    # Sort: CRITICAL first, then WARNING, then ADVISORY
     priority = {"CRITICAL": 0, "WARNING": 1, "ADVISORY": 2}
     active.sort(key=lambda x: priority.get(x["level"], 99))
     return active
 
 
-def render_alert_banner(alert_data, is_personal=False):
-    """Renders a prominent visual alert card. is_personal=True makes it more noticeable for the fisherman's own zone."""
+def render_alert_banner(alert_data):
+    """Renders a prominent visual alert card."""
     if not alert_data or alert_data.get("status") != "success":
         return
 
@@ -403,6 +415,7 @@ def render_alert_banner(alert_data, is_personal=False):
     color = alert_data["color"]
     icon = alert_data["icon"]
 
+    # Different intensity for different levels
     if level == "CRITICAL":
         border = f"3px solid {color}"
         bg = "linear-gradient(135deg, #7f1d1d 0%, #450a0a 100%)"
@@ -420,15 +433,6 @@ def render_alert_banner(alert_data, is_personal=False):
         bg = "linear-gradient(135deg, #064e3b 0%, #022c22 100%)"
         pulse = ""
 
-    personal_badge = ""
-    if is_personal:
-        personal_badge = """
-        <div style="background:#fbbf24; color:#000; font-weight:800; font-size:0.7rem;
-                    padding:2px 8px; border-radius:12px; margin-left:8px;">
-            📍 YOUR ZONE
-        </div>
-        """
-
     html = f"""
     <style>
     @keyframes pulse {{
@@ -440,9 +444,8 @@ def render_alert_banner(alert_data, is_personal=False):
     <div style="background: {bg}; border: {border}; border-radius: 16px; padding: 18px 20px;
                 color: white; margin: 12px 0 18px; {pulse}">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-            <div style="font-size:1.15rem; font-weight:700; display:flex; align-items:center;">
+            <div style="font-size:1.15rem; font-weight:700;">
                 {icon} {alert_data['title']}
-                {personal_badge}
             </div>
             <div style="background:{color}; color:#000; font-weight:800; font-size:0.75rem;
                         padding:3px 10px; border-radius:20px;">
@@ -477,6 +480,7 @@ def render_active_alerts_panel(language="English"):
     for alert in active:
         render_alert_banner(alert)
 
+        # WhatsApp share button for each alert
         wa_text = quote(alert["whatsapp_text"])
         st.link_button(
             f"📤 Share {alert['location']} Alert on WhatsApp",
@@ -484,36 +488,6 @@ def render_active_alerts_panel(language="English"):
             use_container_width=False
         )
         st.markdown("<br>", unsafe_allow_html=True)
-
-
-def render_personal_zone_alert(language="English"):
-    """Renders a dedicated personal alert notification for the fisherman's selected zone."""
-    if not st.session_state.get("my_zone"):
-        return
-
-    zone_name = st.session_state.my_zone
-    loc = next((val for val in LOCATIONS.values() if val["name"] == zone_name), None)
-    if not loc:
-        return
-
-    weather = weather_agent(loc["lat"], loc["lon"])
-    if weather.get("status") != "success":
-        st.warning(f"Could not fetch live conditions for {zone_name}. Please try again.")
-        return
-
-    alert = alert_agent(weather, zone_name, language)
-
-    st.markdown("### 📍 Your Personal Zone Alert")
-    render_alert_banner(alert, is_personal=True)
-
-    # Quick WhatsApp share for personal alert
-    wa_text = quote(alert["whatsapp_text"])
-    st.link_button(
-        f"📤 Share My {zone_name} Alert on WhatsApp",
-        f"https://wa.me/?text={wa_text}",
-        use_container_width=False
-    )
-    st.caption(f"Last updated: {alert['timestamp']} • Auto-refreshes with live data")
 
 
 # ====================== NAVIGATION CALCULATIONS ======================
@@ -610,7 +584,7 @@ def generate_marine_route(origin_lat, origin_lon, dest_lat, dest_lon, harbour_na
 def get_natural_greeting(language="English"):
     if language == "English":
         return (
-            "👋 **Hello! Welcome to the Marine Intelligence Platform by Presidency University.**\n\n"
+            "👋 **Hello! Welcome to the Marine Intelligence Platform.**\n\n"
             "I am your **Marine AI Assistant**, designed specifically for Indian fishermen and marine navigators to keep you safe at sea and guide you to high-catch zones.\n\n"
             "### 🌊 How can I help you today?\n"
             "- 🛡️ **Safety & Weather**: Ask *'Is it safe to go fishing in Goa?'*\n"
@@ -618,12 +592,11 @@ def get_natural_greeting(language="English"):
             "- 🎯 **Best Fishing Zones**: Ask *'Where is the nearest PFZ near Kochi?'*\n"
             "- 💨 **Live Wind & Sea State**: Ask *'What is the wind speed in Mumbai?'*\n"
             "- 🧭 **Routes & Directions**: Ask *'Show fishing route for Chennai'*\n\n"
-            "You can type your question below or use the voice recorder!\n\n"
-            "💡 **Tip**: Select your fishing zone in the sidebar to receive personal sea condition alerts."
+            "You can type your question below or click the **🎙️ microphone** to speak!"
         )
     else:
         return (
-            "👋 **नमस्ते! मरीन इंटेलिजेंस प्लेटफ़ॉर्म (Presidency University) में आपका स्वागत है।**\n\n"
+            "👋 **नमस्ते! मरीन इंटेलिजेंस प्लेटफ़ॉर्म में आपका स्वागत है।**\n\n"
             "मैं आपका **समुद्री एआई सहायक (Marine AI Assistant)** हूँ। मैं भारतीय मछुआरों की सुरक्षा, समुद्र के मौसम और संभावित मत्स्यन क्षेत्रों (PFZ) की सटीक जानकारी प्रदान करता हूँ।\n\n"
             "### 🌊 मैं आपकी क्या मदद कर सकता हूँ?\n"
             "- 🛡️ **समुद्र सुरक्षा**: पूछें *'क्या गोवा में समुद्र में जाना सुरक्षित है?'*\n"
@@ -631,34 +604,31 @@ def get_natural_greeting(language="English"):
             "- 🎯 **मत्स्यन क्षेत्र (PFZ)**: पूछें *'कोच्चि के पास मछली पकड़ने का क्षेत्र कहाँ है?'*\n"
             "- 💨 **हवा और मौसम**: पूछें *'मुंबई में हवा की गति और मौसम कैसा है?'*\n"
             "- 🧭 **नेविगेशन मार्ग**: पूछें *'चेन्नई के लिए मार्ग और दूरी दिखाएं'*\n\n"
-            "आप नीचे अपना प्रश्न लिख सकते हैं या वॉइस रिकॉर्डर का उपयोग कर सकते हैं!\n\n"
-            "💡 **सुझाव**: साइडबार में अपना मछली पकड़ने का क्षेत्र चुनें ताकि आपको व्यक्तिगत समुद्री स्थिति अलर्ट मिल सकें।"
+            "आप नीचे अपना प्रश्न लिख सकते हैं या **🎙️ माइक** पर बोल सकते हैं!"
         )
 
 def get_natural_identity(language="English"):
     if language == "English":
         return (
-            "🤖 **I am the Marine Intelligence Assistant (Marine AI) by Presidency University.**\n\n"
+            "🤖 **I am the Marine Intelligence Assistant (Marine AI).**\n\n"
             "I am an agentic AI system developed for Indian coastal communities. Here is what I can do for you:\n\n"
             "1. 💨 **Real-Time Safety Analysis**: Evaluate live wind speed and wave conditions to advise if it is Safe, Moderately Safe, or Risky to venture into the sea.\n"
             "2. 🚨 **Alert Agent**: Continuously monitors coastal locations and issues CRITICAL / WARNING / ADVISORY alerts.\n"
-            "3. 📍 **Personal Zone Alerts**: Select your fishing port and get dedicated real-time sea condition notifications for your surroundings.\n"
-            "4. 🐟 **Potential Fishing Zones (PFZs)**: Map high-catch areas based on ocean temperature (SST) and chlorophyll concentrations.\n"
-            "5. 🛰️ **Multi-Route Satellite Navigation**: Draw 3 distinct colored routes (Primary, Secondary, Alternate) on satellite maps.\n"
-            "6. 🗺️ **Google Maps Integration**: 1-click directions from port to offshore zones.\n"
-            "7. 🎙️ **Voice Assistance**: Speak or listen to advisories in English or Hindi.\n\n"
+            "3. 🐟 **Potential Fishing Zones (PFZs)**: Map high-catch areas based on ocean temperature (SST) and chlorophyll concentrations.\n"
+            "4. 🛰️ **Multi-Route Satellite Navigation**: Draw 3 distinct colored routes (Primary, Secondary, Alternate) on satellite maps.\n"
+            "5. 🗺️ **Google Maps Integration**: 1-click directions from port to offshore zones.\n"
+            "6. 🎙️ **Voice Assistance**: Speak or listen to advisories in English or Hindi.\n\n"
             "Which coastal port are you departing from? (e.g., *Goa, Kochi, Mumbai, Chennai, Visakhapatnam*)"
         )
     else:
         return (
-            "🤖 **मैं मरीन इंटेलिजेंस असिस्टेंट (Marine AI) by Presidency University हूँ।**\n\n"
+            "🤖 **मैं मरीन इंटेलिजेंस असिस्टेंट (Marine AI) हूँ।**\n\n"
             "मैं भारतीय मछुआरों और नाविकों के लिए विकसित एक विशेष एआई सहायक हूँ। मैं निम्नलिखित सहायता प्रदान करता हूँ:\n\n"
             "1. 💨 **समुद्र मौसम और सुरक्षा**: लाइव हवा की गति के आधार पर समुद्र में जाने की सुरक्षा सलाह।\n"
             "2. 🚨 **अलर्ट एजेंट**: तटीय स्थानों की निरंतर निगरानी और CRITICAL / WARNING / ADVISORY अलर्ट।\n"
-            "3. 📍 **व्यक्तिगत ज़ोन अलर्ट**: अपना मछली पकड़ने का बंदरगाह चुनें और अपने आसपास की वास्तविक समय समुद्री स्थिति सूचनाएं प्राप्त करें।\n"
-            "4. 🐟 **मत्स्यन क्षेत्र (PFZ)**: उपग्रह डेटा द्वारा मछली मिलने के सबसे अच्छे स्थान।\n"
-            "5. 🛰️ **सैटेलाइट नेविगेशन**: बंदरगाह से समुद्र तक 3 अलग-अलग नेविगेशन मार्ग।\n"
-            "6. 🗺️ **गूगल मैप्स नेविगेशन**: लाइव दिशा-निर्देश और दूरी।\n\n"
+            "3. 🐟 **मत्स्यन क्षेत्र (PFZ)**: उपग्रह डेटा द्वारा मछली मिलने के सबसे अच्छे स्थान।\n"
+            "4. 🛰️ **सैटेलाइट नेविगेशन**: बंदरगाह से समुद्र तक 3 अलग-अलग नेविगेशन मार्ग।\n"
+            "5. 🗺️ **गूगल मैप्स नेविगेशन**: लाइव दिशा-निर्देश और दूरी।\n\n"
             "आप किस बंदरगाह या शहर की जानकारी चाहते हैं? (जैसे: *गोवा, कोच्चि, मुंबई, चेन्नई, विशाखापट्टनम*)"
         )
 
@@ -677,6 +647,7 @@ def advanced_nlp_agent(user_query):
     has_marine = bool(RE_MARINE_CORE.search(query))
     has_alert = bool(RE_ALERT.search(query))
 
+    # Priority: Alert intent
     if has_alert and not detected_location:
         intent = "SHOW_ALERTS"
     elif has_alert and detected_location:
@@ -792,6 +763,7 @@ def response_agent(user_query, nlp_plan, weather_info=None, pfz_info=None, alert
     intent = nlp_plan.get("intent", "NORMAL_CHAT")
     lang_inst = "Reply in clear English." if language == "English" else "Reply in clear Hindi."
 
+    # 1. Deterministic Instant Responses (Zero latency, always works)
     if intent == "GREETING":
         return get_natural_greeting(language)
     elif intent == "BOT_IDENTITY":
@@ -813,6 +785,7 @@ def response_agent(user_query, nlp_plan, weather_info=None, pfz_info=None, alert
             "*(उदाहरण: **गोवा, कोच्चि, मुंबई, चेन्नई, विशाखापट्टनम, मैंगलोर**)*"
         )
     elif intent == "SHOW_ALERTS":
+        # Handled specially in the main flow with visual banners
         if language == "English":
             return (
                 "🚨 **Checking active marine alerts across all monitored coastal locations...**\n\n"
@@ -824,6 +797,7 @@ def response_agent(user_query, nlp_plan, weather_info=None, pfz_info=None, alert
                 "कृपया नीचे दिए गए विस्तृत अलर्ट बैनर देखें। आप किसी भी अलर्ट को सीधे व्हाट्सएप पर साझा कर सकते हैं।"
             )
 
+    # 2. Marine Location Advisory (Guarded against NoneType errors)
     loc = nlp_plan.get("location")
     if loc and isinstance(loc, dict) and weather_info:
         loc_name = loc.get("name", "Coastal Port")
@@ -875,6 +849,7 @@ Data:
         if response:
             return response
 
+        # Safe deterministic fallback if API is unreachable
         status = weather_info.get("safety_status", "Safe")
         wind = weather_info.get("wind_speed", 12)
         best_z = pfz_info['best_zone']['name'] if pfz_info else "N/A"
@@ -888,6 +863,7 @@ Data:
             f"🗺️ Please check the satellite map and Google Maps routes below."
         )
 
+    # 3. Conversational / Normal Non-Marine Chat
     system_prompt = f"""You are Marine AI Assistant, a helpful assistant for Indian fishermen and marine navigators.
 {lang_inst}
 Instructions:
@@ -906,7 +882,7 @@ Instructions:
         return response
 
     return (
-        "🌊 **I am your Marine AI Assistant by Presidency University.**\n\n"
+        "🌊 **I am your Marine AI Assistant.**\n\n"
         "I can help you check real-time sea safety, live weather forecasts, active alerts, and Potential Fishing Zones (PFZs) with satellite navigation routes.\n\n"
         "Try asking:\n"
         "- *'Is it safe to fish in Goa?'*\n"
@@ -973,6 +949,7 @@ def render_tts_button(text_to_speak, language="English", auto_play=False, msg_id
             u.rate = 1.0;
             u.pitch = 1.0;
 
+            // Prioritize natural Hindi / Indian English voices if installed
             var voices = window.speechSynthesis.getVoices();
             if (voices && voices.length > 0) {{
                 var targetPrefix = lang.startsWith('hi') ? 'hi' : 'en';
@@ -997,6 +974,7 @@ def render_tts_button(text_to_speak, language="English", auto_play=False, msg_id
                 if (stopBtn) stopBtn.style.display = 'inline-flex';
                 if (indicator) indicator.style.display = 'inline';
 
+                // Chrome 15s garbage collection keepalive
                 keepAliveTimer = setInterval(function() {{
                     if (!window.speechSynthesis.speaking) {{
                         clearInterval(keepAliveTimer);
@@ -1131,7 +1109,7 @@ def render_pfz_section(pfz_data):
     st.caption(f"🌡️ SST: {pfz_data['sst']}°C &nbsp;|&nbsp; 🟢 Chlorophyll: {pfz_data['chlorophyll']} mg/m³")
 
 # ====================== UI SETUP & STATE ======================
-st.set_page_config(page_title="Marine Intelligence Platform by Presidency University", page_icon="🌊", layout="wide")
+st.set_page_config(page_title="Marine Intelligence Platform", page_icon="🌊", layout="wide")
 
 if "language" not in st.session_state:
     st.session_state.language = "English"
@@ -1155,8 +1133,6 @@ if "voice_mode_triggered" not in st.session_state:
     st.session_state.voice_mode_triggered = False
 if "show_alerts_panel" not in st.session_state:
     st.session_state.show_alerts_panel = False
-if "my_zone" not in st.session_state:
-    st.session_state.my_zone = None
 
 # Sticky Floating Chat Dock CSS
 st.markdown(
@@ -1186,13 +1162,10 @@ st.markdown(
 )
 
 now = datetime.now()
-st.title("🌊 Marine Intelligence Platform by Presidency University")
+st.title("🌊 Marine Intelligence Platform")
 st.markdown(f"### 📅 {now.strftime('%d %B %Y')} &nbsp;&nbsp;|&nbsp;&nbsp; 🕒 {now.strftime('%I:%M %p')}")
-st.write("Instant agentic platform with intelligent marine NLP, satellite maps, multi-route navigation, **Alert Agent**, personal zone notifications & voice assistance.")
+st.write("Instant agentic platform with intelligent marine NLP, satellite maps, multi-route navigation, **Alert Agent** & voice assistance.")
 st.divider()
-
-# ====================== PERSONAL ZONE ALERT (TOP PRIORITY) ======================
-render_personal_zone_alert(st.session_state.language)
 
 # Live Coastal Monitoring
 monitor_data = cached_continuous_monitor()
@@ -1219,30 +1192,6 @@ st.divider()
 
 # Sidebar
 with st.sidebar:
-    st.header("📍 My Fishing Zone")
-    st.caption("Select your port to receive personal sea condition alerts")
-    
-    zone_options = ["-- Select your zone --"] + sorted(list(set([v["name"] for v in LOCATIONS.values()])))
-    selected = st.selectbox(
-        "Your Current Port / Zone",
-        zone_options,
-        index=0 if st.session_state.my_zone is None else zone_options.index(st.session_state.my_zone) if st.session_state.my_zone in zone_options else 0
-    )
-    
-    if selected != "-- Select your zone --":
-        if st.session_state.my_zone != selected:
-            st.session_state.my_zone = selected
-            st.rerun()
-    else:
-        st.session_state.my_zone = None
-
-    if st.session_state.my_zone:
-        st.success(f"✅ Monitoring: **{st.session_state.my_zone}**")
-        if st.button("🔄 Refresh My Zone Alert"):
-            st.cache_data.clear()
-            st.rerun()
-
-    st.markdown("---")
     st.header("Language")
     language = st.radio(
         "Select Language",
@@ -1258,6 +1207,19 @@ with st.sidebar:
         value=st.session_state.auto_speak,
         help="Automatically speak marine advisories aloud as soon as the answer is generated"
     )
+
+    st.markdown("---")
+    st.header("Vessel Cruising Speed")
+    speed_option = st.selectbox(
+        "Select Trawler / Boat Type",
+        [
+            "Motorized Boat (8 knots / ~15 km/h)",
+            "Mechanized Trawler (10 knots / ~18.5 km/h)",
+            "Fiber Speedboat (16 knots / ~30 km/h)"
+        ],
+        index=1
+    )
+    st.session_state.boat_speed_knots = 8 if "8 knots" in speed_option else 16 if "16 knots" in speed_option else 10
 
     st.markdown("---")
     st.header("24×7 Marine Helpline")
@@ -1334,6 +1296,7 @@ if st.session_state.map_location:
             r["label"] = ROUTE_COLORS[i]["label"]
             all_routes.append(r)
 
+        # 3-Way Route Comparison Cards
         st.markdown("#### 🧭 Marine Routes Comparison & Google Maps Links")
         cols = st.columns(3)
 
@@ -1374,6 +1337,7 @@ if st.session_state.map_location:
         st.session_state.selected_zone_index = 0 if "Primary" in active_zone_type else 1 if "Secondary" in active_zone_type else 2
         active_route = all_routes[st.session_state.selected_zone_index]
 
+    # ---------- PURE SATELLITE MAP WITH ALL 3 ROUTES ----------
     m = folium.Map(location=[origin_lat, origin_lon], zoom_start=10, tiles=None)
 
     folium.TileLayer(
@@ -1477,6 +1441,7 @@ def submit_text():
         st.session_state.user_typed_input = ""
 
 with st.container(key="chat_dock_container"):
+    # Client-side JavaScript helper for instant reactive submission without page reload
     st.markdown(
         """
         <script>
@@ -1518,6 +1483,7 @@ with st.container(key="chat_dock_container"):
         unsafe_allow_html=True
     )
 
+    # Interactive Voice Prompt Chips
     st.markdown(
         """
         <div style="display:flex; gap:8px; margin-bottom:6px; overflow-x:auto; white-space:nowrap; padding-bottom:2px;">
@@ -1539,15 +1505,66 @@ with st.container(key="chat_dock_container"):
         unsafe_allow_html=True
     )
 
-    input_col, send_col = st.columns([6.5, 1.0])
+    input_col, mic_col, send_col = st.columns([5.0, 1.8, 1.0])
 
     with input_col:
         st.text_input(
             "Marine Question",
-            placeholder="Type question or use voice recorder below (e.g., Hi, Is it safe to fish in Goa?, Show alerts)...",
+            placeholder="Type question or click 🎙️ Speak (e.g., Hi, Is it safe to fish in Goa?, Show alerts)...",
             key="user_typed_input",
             on_change=submit_text,
             label_visibility="collapsed"
+        )
+
+    with mic_col:
+        speech_lang = "en-IN" if st.session_state.language == "English" else "hi-IN"
+        st.markdown(
+            f"""
+            <button id="dock-speech-btn" onclick="
+                var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+                if (!SR) {{
+                    alert('Live voice recognition requires Chrome, Edge, or Safari. For other browsers, please use the Voice Recorder tab below.');
+                    return;
+                }}
+                var b = this;
+                var origBg = '#0284c7';
+                var origHtml = 'Live Speak';
+                b.style.backgroundColor = '#dc2626';
+                b.style.boxShadow = '0 0 20px rgba(220, 38, 38, 0.9)';
+                b.innerHTML = '🔴 Listening...';
+                var r = new SR();
+                r.lang = '{speech_lang}';
+                r.interimResults = true;
+                r.maxAlternatives = 1;
+                var finalRecognized = '';
+                r.onresult = function(e) {{
+                    if (e.results && e.results.length > 0) {{
+                        var text = e.results[0][0].transcript;
+                        b.innerHTML = '🔴 ' + text.substring(0, 14) + '...';
+                        if (e.results[0].isFinal) {{
+                            finalRecognized = text;
+                            b.style.backgroundColor = '#16a34a';
+                            b.innerHTML = '✅ Transcribing...';
+                            if (window.submitMarinePrompt) {{
+                                window.submitMarinePrompt(text, true);
+                            }}
+                        }}
+                    }}
+                }};
+                r.onerror = function(e) {{
+                    b.style.backgroundColor = '#eab308';
+                    b.innerHTML = '⚠️ Retry';
+                    setTimeout(function(){{ b.style.backgroundColor = origBg; b.style.boxShadow = 'none'; b.innerHTML = origHtml; }}, 2500);
+                }};
+                r.onend = function() {{
+                    setTimeout(function(){{ if (!finalRecognized) {{ b.style.backgroundColor = origBg; b.style.boxShadow = 'none'; b.innerHTML = origHtml; }} }}, 2000);
+                }};
+                r.start();
+            " style="width:100%; height:42px; background:#0284c7; color:white; border:none; border-radius:10px; font-weight:700; font-size:0.9rem; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px; box-shadow:0 4px 12px rgba(2,132,199,0.3); transition:all 0.2s ease;">
+                Live Speak
+            </button>
+            """,
+            unsafe_allow_html=True
         )
 
     with send_col:
@@ -1601,7 +1618,7 @@ if audio_file is not None:
 active_prompt = None
 if st.session_state.pending_prompt:
     active_prompt = st.session_state.pending_prompt
-    st.session_state.pending_prompt = None
+    st.session_state.pending_prompt = None  # Consumed immediately
 
 if active_prompt:
     st.session_state.messages.append({"role": "user", "content": active_prompt})
@@ -1610,6 +1627,7 @@ if active_prompt:
         st.markdown(active_prompt)
 
     with st.chat_message("assistant"):
+        # 1. Advanced NLP Intent Analysis (< 1ms)
         nlp_plan = advanced_nlp_agent(active_prompt)
         weather_data = None
         pfz_data = None
@@ -1617,15 +1635,18 @@ if active_prompt:
         location_name = None
         agent_log = [f"NLP Intent Agent ({nlp_plan['intent']})"]
 
+        # If it's a greeting, clear any previous map location so old maps don't persist
         if nlp_plan["intent"] in ["GREETING", "BOT_IDENTITY", "GRATITUDE", "NORMAL_CHAT"]:
             st.session_state.map_location = None
             st.session_state.pfz_data = None
 
+        # Special handling for SHOW_ALERTS
         if nlp_plan["intent"] == "SHOW_ALERTS":
             agent_log.append("Alert Agent (All Locations)")
             st.session_state.show_alerts_panel = True
             render_active_alerts_panel(st.session_state.language)
 
+        # 2. Only invoke Weather & PFZ agents if it's a true marine location query
         if nlp_plan["needs_weather"] and nlp_plan.get("location"):
             loc = nlp_plan["location"]
             location_name = loc["name"]
@@ -1634,6 +1655,7 @@ if active_prompt:
             agent_log.append("Weather Agent")
             render_weather_card(weather_data, location_name)
 
+            # Always generate alert for the location
             alert_data = alert_agent(weather_data, location_name, st.session_state.language)
             agent_log.append(f"Alert Agent ({alert_data['level']})")
             render_alert_banner(alert_data)
@@ -1646,6 +1668,7 @@ if active_prompt:
                 agent_log.append("Multi-Route Navigation Agent")
                 render_pfz_section(pfz_data)
 
+        # 3. Fast Response Agent (Zero crashes, safe fallback)
         agent_log.append("Response Agent")
         final_answer = response_agent(
             active_prompt,
@@ -1657,9 +1680,10 @@ if active_prompt:
         )
         st.markdown(final_answer)
 
+        # Voice output: Automatically speak answer if asked via voice or if auto_speak is active
         should_speak = st.session_state.get("voice_mode_triggered", False) or st.session_state.get("auto_speak", False)
         render_tts_button(final_answer, st.session_state.language, auto_play=should_speak, msg_id="latest")
-        st.session_state.voice_mode_triggered = False
+        st.session_state.voice_mode_triggered = False  # Reset one-shot voice trigger
 
         st.caption(f"🧠 **Agents:** {' → '.join(agent_log)}")
 
