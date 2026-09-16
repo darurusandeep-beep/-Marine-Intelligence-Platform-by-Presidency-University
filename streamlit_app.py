@@ -1162,7 +1162,7 @@ st.markdown(
 )
 
 now = datetime.now()
-st.title("🌊 Marine Intelligence Platform")
+st.title("🌊 Marine Intelligence Platform BY PRESIDENCY UNIVERSITY")
 st.markdown(f"### 📅 {now.strftime('%d %B %Y')} &nbsp;&nbsp;|&nbsp;&nbsp; 🕒 {now.strftime('%I:%M %p')}")
 st.write("Instant agentic platform with intelligent marine NLP, satellite maps, multi-route navigation, **Alert Agent** & voice assistance.")
 st.divider()
