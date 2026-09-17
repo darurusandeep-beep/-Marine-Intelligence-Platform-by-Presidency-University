@@ -32,76 +32,10 @@ if not GROQ_API_KEY:
 
 client = Groq(api_key=GROQ_API_KEY)
 
-WHATSAPP_NUMBER = "1554"
-PHONE_NUMBER = "1554"
+WHATSAPP_NUMBER = "919876543210"
+PHONE_NUMBER = "+919876543210"
 
-# ====================== SUPPORTED LANGUAGES ======================
-SUPPORTED_LANGUAGES = {
-    "English": {
-        "code": "en",
-        "whisper": "en",
-        "tts": "en-IN",
-        "speech_recognition": "en-IN",
-        "name": "English"
-    },
-    "Hindi": {
-        "code": "hi",
-        "whisper": "hi",
-        "tts": "hi-IN",
-        "speech_recognition": "hi-IN",
-        "name": "हिन्दी"
-    },
-    "Tamil": {
-        "code": "ta",
-        "whisper": "ta",
-        "tts": "ta-IN",
-        "speech_recognition": "ta-IN",
-        "name": "தமிழ்"
-    },
-    "Telugu": {
-        "code": "te",
-        "whisper": "te",
-        "tts": "te-IN",
-        "speech_recognition": "te-IN",
-        "name": "తెలుగు"
-    },
-    "Malayalam": {
-        "code": "ml",
-        "whisper": "ml",
-        "tts": "ml-IN",
-        "speech_recognition": "ml-IN",
-        "name": "മലയാളം"
-    },
-    "Kannada": {
-        "code": "kn",
-        "whisper": "kn",
-        "tts": "kn-IN",
-        "speech_recognition": "kn-IN",
-        "name": "ಕನ್ನಡ"
-    },
-    "Marathi": {
-        "code": "mr",
-        "whisper": "mr",
-        "tts": "mr-IN",
-        "speech_recognition": "mr-IN",
-        "name": "मराठी"
-    },
-    "Gujarati": {
-        "code": "gu",
-        "whisper": "gu",
-        "tts": "gu-IN",
-        "speech_recognition": "gu-IN",
-        "name": "ગુજરાતી"
-    },
-    "Bengali": {
-        "code": "bn",
-        "whisper": "bn",
-        "tts": "bn-IN",
-        "speech_recognition": "bn-IN",
-        "name": "বাংলা"
-    },
-}
-
+# Coastal locations
 LOCATIONS = {
     "kochi": {"lat": 9.9312, "lon": 76.2673, "name": "Kochi", "harbour_name": "Cochin Fisheries Harbour", "harbour_lat": 9.9402, "harbour_lon": 76.2598, "coast": "west"},
     "cochin": {"lat": 9.9312, "lon": 76.2673, "name": "Kochi", "harbour_name": "Cochin Fisheries Harbour", "harbour_lat": 9.9402, "harbour_lon": 76.2598, "coast": "west"},
@@ -115,7 +49,10 @@ LOCATIONS = {
     "ratnagiri": {"lat": 16.9902, "lon": 73.3120, "name": "Ratnagiri", "harbour_name": "Mirkarwada Fishing Harbour", "harbour_lat": 16.9935, "harbour_lon": 73.2840, "coast": "west"},
 }
 
-COASTAL_LOCATIONS = ["Kochi", "Mumbai", "Chennai", "Mangalore", "Visakhapatnam"]
+COASTAL_LOCATIONS = [
+    "Kochi", "Mumbai", "Chennai", "Mangalore", "Visakhapatnam"
+]
+
 INLAND_MONITORED = ["Delhi", "Jaipur", "Hyderabad", "Bengaluru", "Kolkata", "Pune", "Ahmedabad"]
 MONITORED_LOCATIONS = COASTAL_LOCATIONS.copy()
 
@@ -125,63 +62,11 @@ ROUTE_COLORS = {
     2: {"hex": "#F59E0B", "label": "Alternate Route (Amber Gold)"}
 }
 
-GEOFENCES = {
-    "Kochi Harbour Zone": {"center": (9.9402, 76.2598), "radius_km": 8, "type": "harbour", "color": "#00E5FF", "description": "Cochin Fisheries Harbour operational zone"},
-    "Mumbai Sassoon Zone": {"center": (18.9167, 72.8258), "radius_km": 7, "type": "harbour", "color": "#3B82F6", "description": "Sassoon Docks fishing harbour zone"},
-    "Chennai Kasimedu Zone": {"center": (13.1250, 80.2985), "radius_km": 6, "type": "harbour", "color": "#10B981", "description": "Kasimedu Fishing Harbour zone"},
-    "Mangalore Port Zone": {"center": (12.8584, 74.8351), "radius_km": 7, "type": "harbour", "color": "#F59E0B", "description": "Old Mangalore Bunder Port zone"},
-    "Vizag Harbour Zone": {"center": (17.6980, 83.2982), "radius_km": 8, "type": "harbour", "color": "#A855F7", "description": "Vizag Fishing Harbour zone"},
-    "Goa Mormugao Zone": {"center": (15.4124, 73.8052), "radius_km": 9, "type": "harbour", "color": "#EC4899", "description": "Mormugao / Betul Fishing Harbour zone"}
-}
-
 RE_GREETING = re.compile(r'\b(hi|hello|hey|heyy|greetings|namaste|namaskar|vanakkam|kem\s*cho|good\s*(morning|afternoon|evening|day)|kaise\s*ho|kya\s*haal|kese\s*ho|hi\s*there|hello\s*there)\b', re.IGNORECASE)
 RE_IDENTITY = re.compile(r'\b(who are you|what is your name|kya ho tum|tum kaun ho|what can you do|your features|help me|what do you do|introduce yourself|tell me about yourself|how can you help)\b', re.IGNORECASE)
 RE_GRATITUDE = re.compile(r'\b(thank\s*you|thanks|dhanyawad|shukriya|bye|goodbye|alvida|see you)\b', re.IGNORECASE)
-RE_MARINE_CORE = re.compile(r'\b(sea|weather|wind|safe\w*|fish\w*|wave\w*|tide\w*|ocean|cyclon\w*|storm\w*|rain|boat|harbour|harbor|port|coast|pfz|navigation|direction\w*|route\w*|distance|samundar|mausam|hawa|machli|temperature|temp|humidity|geofence|geo\s*fence|zone)\b', re.IGNORECASE)
+RE_MARINE_CORE = re.compile(r'\b(sea|weather|wind|safe\w*|fish\w*|wave\w*|tide\w*|ocean|cyclon\w*|storm\w*|rain|boat|harbour|harbor|port|coast|pfz|navigation|direction\w*|route\w*|distance|samundar|mausam|hawa|machli|temperature|temp|humidity)\b', re.IGNORECASE)
 RE_ALERT = re.compile(r'\b(alert|alerts|warning|warnings|danger|dangerous|risk|risky|emergency|caution|advisory|advisories|chetaavani|chetavani|khatra|khatre)\b', re.IGNORECASE)
-
-# ====================== LANGUAGE HELPERS ======================
-def get_lang_instruction(language):
-    instructions = {
-        "English": "Reply only in clear, simple English.",
-        "Hindi": "केवल स्पष्ट और सरल हिंदी में उत्तर दें।",
-        "Tamil": "தெளிவான மற்றும் எளிய தமிழில் மட்டும் பதிலளிக்கவும்.",
-        "Telugu": "స్పష్టమైన మరియు సాధారణ తెలుగులో మాత్రమే సమాధానం ఇవ్వండి.",
-        "Malayalam": "വ്യക്തവും ലളിതവുമായ മലയാളത്തിൽ മാത്രം മറുപടി നൽകുക.",
-        "Kannada": "ಸ್ಪಷ್ಟ ಮತ್ತು ಸರಳ ಕನ್ನಡದಲ್ಲಿ ಮಾತ್ರ ಉತ್ತರಿಸಿ.",
-        "Marathi": "फक्त स्पष्ट आणि साध्या मराठीत उत्तर द्या.",
-        "Gujarati": "ફક્ત સ્પષ્ટ અને સરળ ગુજરાતીમાં જવાબ આપો.",
-        "Bengali": "শুধুমাত্র স্পষ্ট এবং সহজ বাংলায় উত্তর দিন।"
-    }
-    return instructions.get(language, instructions["English"])
-
-def get_natural_greeting(language="English"):
-    greetings = {
-        "English": "👋 **Hello! Welcome to the Marine Intelligence Platform.**\n\nI support voice input in 9 languages. Just speak or type!",
-        "Hindi": "👋 **नमस्ते! मरीन इंटेलिजेंस प्लेटफ़ॉर्म में आपका स्वागत है।**\n\nमैं 9 भाषाओं में वॉइस इनपुट सपोर्ट करता हूँ।",
-        "Tamil": "👋 **வணக்கம்! மெரைன் இன்டெலிஜென்ஸ் பிளாட்ஃபார்மிற்கு வரவேற்கிறோம்.**\n\nநான் 9 மொழிகளில் குரல் உள்ளீட்டை ஆதரிக்கிறேன்.",
-        "Telugu": "👋 **నమస్కారం! మెరైన్ ఇంటెలిజెన్స్ ప్లాట్‌ఫామ్‌కు స్వాగతం.**\n\nనేను 9 భాషలలో వాయిస్ ఇన్‌పుట్‌ను సపోర్ట్ చేస్తాను.",
-        "Malayalam": "👋 **നമസ്കാരം! മറൈൻ ഇന്റലിജൻസ് പ്ലാറ്റ്ഫോമിലേക്ക് സ്വാഗതം.**\n\nഞാൻ 9 ഭാഷകളിൽ വോയ്സ് ഇൻപുട്ട് പിന്തുണയ്ക്കുന്നു.",
-        "Kannada": "👋 **ನಮಸ್ಕಾರ! ಮೆರೈನ್ ಇಂಟೆಲಿಜೆನ್ಸ್ ಪ್ಲಾಟ್‌ಫಾರ್ಮ್‌ಗೆ ಸ್ವಾಗತ.**\n\nನಾನು 9 ಭಾಷೆಗಳಲ್ಲಿ ವಾಯ್ಸ್ ಇನ್‌ಪುಟ್ ಅನ್ನು ಬೆಂಬಲಿಸುತ್ತೇನೆ.",
-        "Marathi": "👋 **नमस्कार! मरीन इंटेलिजन्स प्लॅटफॉर्ममध्ये आपले स्वागत आहे.**\n\nमी 9 भाषांमध्ये व्हॉइस इनपुट सपोर्ट करतो.",
-        "Gujarati": "👋 **નમસ્તે! મરીન ઇન્ટેલિજન્સ પ્લેટફોર્મમાં આપનું સ્વાગત છે.**\n\nહું 9 ભાષાઓમાં વૉઇસ ઇનપુટ સપોર્ટ કરું છું.",
-        "Bengali": "👋 **নমস্কার! মেরিন ইন্টেলিজেন্স প্ল্যাটফর্মে আপনাকে স্বাগতম।**\n\nআমি 9টি ভাষায় ভয়েস ইনপুট সমর্থন করি।"
-    }
-    return greetings.get(language, greetings["English"])
-
-def get_natural_identity(language="English"):
-    identities = {
-        "English": "🤖 **I am the Marine Intelligence Assistant.**\n\nI support multi-language voice input and replies in English, Hindi, Tamil, Telugu, Malayalam, Kannada, Marathi, Gujarati and Bengali.",
-        "Hindi": "🤖 **मैं मरीन इंटेलिजेंस असिस्टेंट हूँ।**\n\nमैं बहुभाषी वॉइस इनपुट और उत्तर का समर्थन करता हूँ।",
-        "Tamil": "🤖 **நான் மெரைன் இன்டெலிஜென்ஸ் அசிஸ்டண்ட்.**\n\nநான் பன்மொழி குரல் உள்ளீடு மற்றும் பதில்களை ஆதரிக்கிறேன்.",
-        "Telugu": "🤖 **నేను మెరైన్ ఇంటెలిజెన్స్ అసిస్టెంట్.**\n\nనేను బహుభాషా వాయిస్ ఇన్‌పుట్ మరియు సమాధానాలను సపోర్ట్ చేస్తాను.",
-        "Malayalam": "🤖 **ഞാൻ മറൈൻ ഇന്റലിജൻസ് അസിസ്റ്റന്റ് ആണ്.**\n\nഞാൻ ബഹുഭാഷാ വോയ്സ് ഇൻപുട്ടും മറുപടികളും പിന്തുണയ്ക്കുന്നു.",
-        "Kannada": "🤖 **ನಾನು ಮೆರೈನ್ ಇಂಟೆಲಿಜೆನ್ಸ್ ಅಸಿಸ್ಟೆಂಟ್.**\n\nನಾನು ಬಹುಭಾಷಾ ವಾಯ್ಸ್ ಇನ್‌ಪುಟ್ ಮತ್ತು ಉತ್ತರಗಳನ್ನು ಬೆಂಬಲಿಸುತ್ತೇನೆ.",
-        "Marathi": "🤖 **मी मरीन इंटेलिजन्स असिस्टंट आहे.**\n\nमी बहुभाषिक व्हॉइस इनपुट आणि उत्तरे सपोर्ट करतो.",
-        "Gujarati": "🤖 **હું મરીન ઇન્ટેલિજન્સ અસિસ્ટન્ટ છું.**\n\nહું બહુભાષી વૉઇસ ઇનપુટ અને જવાબો સપોર્ટ કરું છું.",
-        "Bengali": "🤖 **আমি মেরিন ইন্টেলিজেন্স অ্যাসিস্ট্যান্ট।**\n\nআমি বহুভাষিক ভয়েস ইনপুট এবং উত্তর সমর্থন করি।"
-    }
-    return identities.get(language, identities["English"])
 
 # ====================== GEOCODING ======================
 @st.cache_data(ttl=3600, show_spinner=False)
@@ -207,7 +92,7 @@ def geocode_location(place_name: str):
         pass
     return None
 
-# ====================== VOICE TO TEXT (MULTI-LANGUAGE) ======================
+# ====================== VOICE ======================
 def get_audio_filename_and_mime(audio_bytes, original_name=None, mime_type=None):
     if not audio_bytes or len(audio_bytes) < 4:
         return "voice_input.wav", "audio/wav"
@@ -229,173 +114,132 @@ def get_audio_filename_and_mime(audio_bytes, original_name=None, mime_type=None)
     return "voice_input.webm", "audio/webm"
 
 def transcribe_voice_query(audio_bytes, language="English"):
-    """
-    High-accuracy multi-language voice-to-text using Groq Whisper.
-    Supports: en, hi, ta, te, ml, kn, mr, gu, bn
-    """
     if not audio_bytes or len(audio_bytes) < 100:
         return None
-
     filename, mime_type = get_audio_filename_and_mime(audio_bytes)
-    lang_code = SUPPORTED_LANGUAGES.get(language, {}).get("whisper", "en")
-
+    lang_code = "en" if language == "English" else "hi"
     for model_name in ["whisper-large-v3-turbo", "whisper-large-v3"]:
         try:
             transcription = client.audio.transcriptions.create(
                 file=(filename, audio_bytes, mime_type),
                 model=model_name,
                 language=lang_code,
-                temperature=0.0,
-                response_format="text"
+                temperature=0.0
             )
-            # Handle both string and object response
-            if isinstance(transcription, str):
-                text = transcription.strip()
-            else:
-                text = getattr(transcription, "text", str(transcription)).strip()
-
+            text = transcription.text.strip()
             if text:
                 return text
         except Exception:
             try:
-                # Fallback without forcing language
                 transcription = client.audio.transcriptions.create(
                     file=(filename, audio_bytes, mime_type),
                     model=model_name,
                     temperature=0.0
                 )
-                if isinstance(transcription, str):
-                    text = transcription.strip()
-                else:
-                    text = getattr(transcription, "text", str(transcription)).strip()
+                text = transcription.text.strip()
                 if text:
                     return text
             except Exception:
                 continue
     return None
 
-# ====================== WEATHER + OCEANOGRAPHIC AGENT ======================
+# ====================== WEATHER AGENT ======================
 @st.cache_data(ttl=180, show_spinner=False)
 def weather_agent(lat, lon):
     try:
-        weather_url = "https://api.open-meteo.com/v1/forecast"
-        weather_params = {
+        url = "https://api.open-meteo.com/v1/forecast"
+        params = {
             "latitude": lat,
             "longitude": lon,
-            "current": ",".join([
-                "temperature_2m", "relative_humidity_2m", "apparent_temperature",
-                "precipitation", "rain", "weather_code", "cloud_cover",
-                "pressure_msl", "surface_pressure",
-                "wind_speed_10m", "wind_direction_10m", "wind_gusts_10m", "visibility"
-            ]),
+            "current": "temperature_2m,relative_humidity_2m,wind_speed_10m,wind_direction_10m,weather_code,precipitation,cloud_cover",
             "timezone": "Asia/Kolkata"
         }
-        weather_resp = requests.get(weather_url, params=weather_params, timeout=10)
-        if weather_resp.status_code != 200:
-            return {"status": "error", "message": f"Weather API Error: {weather_resp.status_code}"}
+        response = requests.get(url, params=params, timeout=8)
+        if response.status_code != 200:
+            return {"status": "error", "message": f"Weather API Error: {response.status_code}"}
 
-        current = weather_resp.json().get("current", {})
+        data = response.json()
+        current = data.get("current", {})
         if not current:
             return {"status": "error", "message": "No weather data received"}
+
+        wind_speed = current.get("wind_speed_10m", 0) or 0
 
         marine_url = "https://marine-api.open-meteo.com/v1/marine"
         marine_params = {
             "latitude": lat,
             "longitude": lon,
-            "current": ",".join([
-                "sea_surface_temperature", "wave_height", "wave_direction", "wave_period",
-                "wind_wave_height", "wind_wave_direction", "wind_wave_period",
-                "swell_wave_height", "swell_wave_direction", "swell_wave_period",
-                "ocean_current_velocity", "ocean_current_direction"
-            ]),
+            "current": "sea_surface_temperature,wave_height,wave_direction,wave_period,ocean_current_velocity",
             "timezone": "Asia/Kolkata"
         }
-        marine_resp = requests.get(marine_url, params=marine_params, timeout=8)
-        mdata = marine_resp.json().get("current", {}) if marine_resp.status_code == 200 else {}
-
-        wind_speed = current.get("wind_speed_10m", 0) or 0
-        wave_height = mdata.get("wave_height")
-        sst = mdata.get("sea_surface_temperature")
+        marine_resp = requests.get(marine_url, params=marine_params, timeout=6)
+        sst = wave_height = wave_period = current_velocity = None
+        if marine_resp.status_code == 200:
+            mdata = marine_resp.json().get("current", {})
+            sst = mdata.get("sea_surface_temperature")
+            wave_height = mdata.get("wave_height")
+            wave_period = mdata.get("wave_period")
+            current_velocity = mdata.get("ocean_current_velocity")
 
         if wind_speed < 15 and (wave_height is None or wave_height < 1.5):
-            safety_status, safety_color = "Safe", "green"
+            safety_status = "Safe"
+            safety_color = "green"
             safety_message = "Conditions appear favourable."
+            prediction = "Favourable conditions expected."
         elif wind_speed < 25 and (wave_height is None or wave_height < 2.5):
-            safety_status, safety_color = "Moderately Safe", "orange"
-            safety_message = "Exercise caution. Moderate wind / waves."
+            safety_status = "Moderately Safe"
+            safety_color = "orange"
+            safety_message = "Exercise caution. Wind is moderate."
+            prediction = "Moderate conditions. Stay alert."
         else:
-            safety_status, safety_color = "Not Safe", "red"
-            safety_message = "High wind or rough sea conditions. Stay safe."
-
-        weather_code = current.get("weather_code", 0)
-        weather_desc = {
-            0: "Clear sky", 1: "Mainly clear", 2: "Partly cloudy", 3: "Overcast",
-            45: "Fog", 48: "Depositing rime fog",
-            51: "Light drizzle", 53: "Moderate drizzle", 55: "Dense drizzle",
-            61: "Slight rain", 63: "Moderate rain", 65: "Heavy rain",
-            71: "Slight snow", 73: "Moderate snow", 75: "Heavy snow",
-            80: "Slight rain showers", 81: "Moderate rain showers", 82: "Violent rain showers",
-            95: "Thunderstorm", 96: "Thunderstorm with slight hail", 99: "Thunderstorm with heavy hail"
-        }.get(weather_code, "Unknown")
+            safety_status = "Not Safe"
+            safety_color = "red"
+            safety_message = "High wind speed or rough conditions. Be careful."
+            prediction = "Unfavourable conditions expected."
 
         return {
             "temperature": current.get("temperature_2m"),
-            "feels_like": current.get("apparent_temperature"),
             "humidity": current.get("relative_humidity_2m"),
-            "precipitation": current.get("precipitation"),
-            "rain": current.get("rain"),
-            "cloud_cover": current.get("cloud_cover"),
-            "pressure_msl": current.get("pressure_msl"),
-            "surface_pressure": current.get("surface_pressure"),
             "wind_speed": round(wind_speed, 1),
             "wind_direction": current.get("wind_direction_10m"),
-            "wind_gusts": current.get("wind_gusts_10m"),
-            "visibility": current.get("visibility"),
-            "weather_code": weather_code,
-            "weather_desc": weather_desc,
+            "precipitation": current.get("precipitation"),
+            "cloud_cover": current.get("cloud_cover"),
             "sea_surface_temperature": round(sst, 1) if sst is not None else None,
             "wave_height": round(wave_height, 2) if wave_height is not None else None,
-            "wave_direction": mdata.get("wave_direction"),
-            "wave_period": round(mdata.get("wave_period"), 1) if mdata.get("wave_period") is not None else None,
-            "wind_wave_height": mdata.get("wind_wave_height"),
-            "swell_wave_height": mdata.get("swell_wave_height"),
-            "ocean_current_velocity": round(mdata.get("ocean_current_velocity"), 2) if mdata.get("ocean_current_velocity") is not None else None,
-            "ocean_current_direction": mdata.get("ocean_current_direction"),
+            "wave_period": round(wave_period, 1) if wave_period is not None else None,
+            "ocean_current_velocity": round(current_velocity, 2) if current_velocity is not None else None,
             "safety_status": safety_status,
             "safety_color": safety_color,
             "safety_message": safety_message,
-            "prediction": safety_message,
+            "prediction": prediction,
             "status": "success"
         }
     except Exception as e:
         return {"status": "error", "message": str(e)}
 
-@st.cache_data(ttl=90, show_spinner=False)
+@st.cache_data(ttl=120, show_spinner=False)
 def cached_continuous_monitor():
     results = []
     for name in MONITORED_LOCATIONS:
         loc = next((val for val in LOCATIONS.values() if val["name"] == name), None)
         if not loc:
             continue
-        try:
-            weather = weather_agent(loc["lat"], loc["lon"])
-            if weather.get("status") == "success":
-                results.append({
-                    "name": name,
-                    "safety_status": weather["safety_status"],
-                    "safety_color": weather["safety_color"],
-                    "wind_speed": weather["wind_speed"],
-                    "temperature": weather["temperature"],
-                    "sst": weather.get("sea_surface_temperature"),
-                    "wave_height": weather.get("wave_height"),
-                    "prediction": weather.get("prediction", "No prediction"),
-                    "lat": loc["lat"],
-                    "lon": loc["lon"],
-                    "is_coastal": True,
-                    "priority": 0
-                })
-        except Exception:
-            continue
+        weather = weather_agent(loc["lat"], loc["lon"])
+        if weather.get("status") == "success":
+            results.append({
+                "name": name,
+                "safety_status": weather["safety_status"],
+                "safety_color": weather["safety_color"],
+                "wind_speed": weather["wind_speed"],
+                "temperature": weather["temperature"],
+                "sst": weather.get("sea_surface_temperature"),
+                "wave_height": weather.get("wave_height"),
+                "prediction": weather.get("prediction", "No prediction"),
+                "lat": loc["lat"],
+                "lon": loc["lon"],
+                "is_coastal": True,
+                "priority": 0
+            })
     return results
 
 def _resolve_location_coords(name: str):
@@ -444,24 +288,24 @@ def alert_agent(weather_info, location_name, language="English", is_coastal=True
 
     if wind >= 30 or safety == "Not Safe" or (wave is not None and wave >= 3.0):
         level, color, icon = "CRITICAL", "#DC2626", "🚨"
-        title = f"CRITICAL ALERT — {location_name}"
+        title = f"CRITICAL ALERT — {location_name}" if language == "English" else f"गंभीर चेतावनी — {location_name}"
         message = f"High wind **{wind} km/h**" + (f" & waves **{wave} m**" if wave else "") + ". **Stay safe.**"
-        action = "Avoid outdoor activities if possible."
+        action = "Avoid outdoor activities if possible." if language == "English" else "यदि संभव हो तो बाहर न जाएं।"
     elif wind >= 20 or safety == "Moderately Safe" or (wave is not None and wave >= 1.8):
         level, color, icon = "WARNING", "#F59E0B", "⚠️"
-        title = f"WARNING — {location_name}"
+        title = f"WARNING — {location_name}" if language == "English" else f"चेतावनी — {location_name}"
         message = f"Moderate winds **{wind} km/h**" + (f" | Waves: **{wave} m**" if wave else "") + ". Exercise caution."
-        action = "Stay alert and carry necessary precautions."
+        action = "Stay alert and carry necessary precautions." if language == "English" else "सावधान रहें।"
     elif wind >= 12:
         level, color, icon = "ADVISORY", "#3B82F6", "ℹ️"
-        title = f"ADVISORY — {location_name}"
+        title = f"ADVISORY — {location_name}" if language == "English" else f"सलाह — {location_name}"
         message = f"Wind **{wind} km/h**" + (f" | SST: **{sst}°C**" if sst else "") + ". Conditions manageable."
-        action = "Monitor conditions."
+        action = "Monitor conditions." if language == "English" else "स्थितियों पर नज़र रखें।"
     else:
         level, color, icon = "CLEAR", "#10B981", "✅"
-        title = f"ALL CLEAR — {location_name}"
+        title = f"ALL CLEAR — {location_name}" if language == "English" else f"सभी ठीक — {location_name}"
         message = f"Favourable conditions. Wind **{wind} km/h**" + (f" | SST: **{sst}°C**" if sst else "") + "."
-        action = "Have a safe day!"
+        action = "Have a safe day!" if language == "English" else "सुरक्षित रहें!"
 
     whatsapp_text = (
         f"🌊 ALERT — {location_name}\nLevel: {level}\n"
@@ -510,7 +354,10 @@ def generate_active_alerts(language="English", include_inland=True):
                 if alert["level"] in ["CRITICAL", "WARNING", "ADVISORY"]:
                     active.append(alert)
 
-    active.sort(key=lambda x: (0 if x.get("is_coastal", False) else 1, level_priority.get(x["level"], 99)))
+    active.sort(key=lambda x: (
+        0 if x.get("is_coastal", False) else 1,
+        level_priority.get(x["level"], 99)
+    ))
     return active
 
 @st.cache_data(ttl=90, show_spinner=False)
@@ -570,26 +417,26 @@ def render_active_alerts_panel(language="English"):
     inland_alerts = [a for a in active if not a.get("is_coastal")]
 
     if not active:
-        st.success("✅ **No active alerts** — all monitored locations are clear.")
+        st.success("✅ **No active alerts** — all monitored coastal & inland locations are clear.")
         return
 
     st.markdown(f"### 🚨 Real-Time Alert Agent — {len(active)} Active")
-    st.caption("Coastal locations are prioritised first.")
+    st.caption("Coastal locations are always prioritised and shown first. Data refreshes every ~90 seconds.")
 
     if coastal_alerts:
-        st.markdown("#### 🌊 Coastal Priority Alerts")
+        st.markdown("#### 🌊 Coastal Priority Alerts (shown first)")
         for alert in coastal_alerts:
             render_alert_banner(alert)
             wa_text = quote(alert["whatsapp_text"])
-            st.link_button(f"📤 Share {alert['location']} Alert", f"https://wa.me/?text={wa_text}")
+            st.link_button(f"📤 Share {alert['location']} Alert on WhatsApp", f"https://wa.me/?text={wa_text}")
             st.markdown("<br>", unsafe_allow_html=True)
 
     if inland_alerts:
-        st.markdown("#### 🏙 Inland Alerts")
+        st.markdown("#### 🏙 Inland / Rest of India Alerts")
         for alert in inland_alerts:
             render_alert_banner(alert)
             wa_text = quote(alert["whatsapp_text"])
-            st.link_button(f"📤 Share {alert['location']} Alert", f"https://wa.me/?text={wa_text}")
+            st.link_button(f"📤 Share {alert['location']} Alert on WhatsApp", f"https://wa.me/?text={wa_text}")
             st.markdown("<br>", unsafe_allow_html=True)
 
 # ====================== NAVIGATION ======================
@@ -629,67 +476,69 @@ def generate_marine_route(origin_lat, origin_lon, dest_lat, dest_lon, harbour_na
            round(origin_lon + (dest_lon-origin_lon)*0.65,4)]
     wp4 = [dest_lat, dest_lon]
 
+    steps = [
+        {"step":1, "title":f"Depart {harbour_name}", "coords":wp1,
+         "instruction":f"Cast off. Steer {bearing}° ({compass_dir}).", "distance":f"{round(dist_km*0.25,1)} km"},
+        {"step":2, "title":"Clear Harbor Fairway", "coords":wp2,
+         "instruction":f"Exit breakwater. Maintain heading {compass_dir}.", "distance":f"{round(dist_km*0.40,1)} km"},
+        {"step":3, "title":"Mid-Course Waypoint", "coords":wp3,
+         "instruction":"Deep coastal shelf. Monitor instruments.", "distance":f"{round(dist_km*0.35,1)} km"},
+        {"step":4, "title":f"Arrival: {dest_name}", "coords":wp4,
+         "instruction":"Arrive at PFZ. Deploy gear.", "distance":"Destination Reached"}
+    ]
+
     gmaps_url = f"https://www.google.com/maps/dir/?api=1&origin={origin_lat},{origin_lon}&destination={dest_lat},{dest_lon}&travelmode=driving"
 
     return {
         "distance_km": dist_km, "distance_nm": dist_nm, "bearing": bearing,
         "compass_dir": compass_dir, "eta": f"{hours}h {minutes}m",
         "fuel_l": fuel_est_liters, "waypoints": [wp1,wp2,wp3,wp4],
-        "gmaps_url": gmaps_url
+        "steps": steps, "gmaps_url": gmaps_url
     }
 
-# ====================== GEOFENCING ======================
-def is_inside_geofence(lat, lon, fence):
-    center_lat, center_lon = fence["center"]
-    distance = haversine_distance(lat, lon, center_lat, center_lon)
-    return distance <= fence["radius_km"], distance
-
-def check_geofences(lat, lon):
-    results = []
-    for name, fence in GEOFENCES.items():
-        inside, distance = is_inside_geofence(lat, lon, fence)
-        results.append({
-            "name": name,
-            "inside": inside,
-            "distance_km": round(distance, 2),
-            "type": fence["type"],
-            "color": fence["color"],
-            "description": fence["description"],
-            "radius_km": fence["radius_km"]
-        })
-    results.sort(key=lambda x: (not x["inside"], x["distance_km"]))
-    return results
-
-def render_geofence_status(lat, lon, location_name):
-    fences = check_geofences(lat, lon)
-    inside_fences = [f for f in fences if f["inside"]]
-    nearby_fences = [f for f in fences if not f["inside"] and f["distance_km"] < 25]
-
-    st.markdown("### 🛡️ Geofencing Status")
-
-    if inside_fences:
-        for f in inside_fences:
-            st.markdown(f"""
-            <div style="background:rgba(16,185,129,0.15); border:1px solid #10B981; border-radius:14px; padding:14px; margin-bottom:10px; color:white;">
-                <div style="font-weight:700; font-size:1.05rem;">✅ Inside: {f['name']}</div>
-                <div style="font-size:0.88rem; opacity:0.9; margin-top:4px;">{f['description']}</div>
-                <div style="font-size:0.82rem; margin-top:6px;">Distance from center: <b>{f['distance_km']} km</b> | Radius: {f['radius_km']} km</div>
-            </div>
-            """, unsafe_allow_html=True)
-    else:
-        st.info(f"📍 **{location_name}** is currently **outside** all defined harbour geofences.")
-
-    if nearby_fences:
-        st.markdown("#### 📍 Nearby Geofences")
-        for f in nearby_fences[:3]:
-            st.markdown(f"""
-            <div style="background:rgba(59,130,246,0.12); border:1px solid rgba(59,130,246,0.4); border-radius:12px; padding:12px; margin-bottom:8px; color:white;">
-                <b>{f['name']}</b> — {f['distance_km']} km away
-                <div style="font-size:0.8rem; opacity:0.85;">{f['description']}</div>
-            </div>
-            """, unsafe_allow_html=True)
-
 # ====================== NLP ======================
+def get_natural_greeting(language="English"):
+    if language == "English":
+        return (
+            "👋 **Hello! Welcome to the Marine Intelligence Platform.**\n\n"
+            "I can now give you **real-time weather for any place in India** + full marine features for coastal ports.\n\n"
+            "### Examples:\n"
+            "- *Weather in Delhi*\n"
+            "- *Temperature in Jaipur*\n"
+            "- *Is it safe to fish in Goa?*\n"
+            "- *Show active alerts*\n"
+            "- *Best PFZ near Kochi*\n\n"
+            "Just type or speak!"
+        )
+    else:
+        return (
+            "👋 **नमस्ते! मरीन इंटेलिजेंस प्लेटफ़ॉर्म में आपका स्वागत है।**\n\n"
+            "अब मैं **भारत के किसी भी स्थान** का रीयल-टाइम मौसम बता सकता हूँ + तटीय बंदरगाहों के लिए पूर्ण समुद्री सुविधाएं।\n\n"
+            "उदाहरण:\n"
+            "- *दिल्ली का मौसम*\n"
+            "- *जयपुर में तापमान*\n"
+            "- *गोवा में मछली पकड़ना सुरक्षित है?*\n"
+            "- *सक्रिय अलर्ट दिखाएं*"
+        )
+
+def get_natural_identity(language="English"):
+    if language == "English":
+        return (
+            "🤖 **I am the Marine Intelligence Assistant.**\n\n"
+            "I can provide:\n"
+            "1. Real-time weather for **any city/town in India**\n"
+            "2. Full marine safety, PFZ & navigation for coastal ports\n"
+            "3. **Real-Time Alert Agent** that prioritises **coastal locations first**, then inland\n"
+            "4. Live satellite maps & voice assistance\n\n"
+            "Try asking about Delhi, Mumbai, Kochi, Jaipur, Hyderabad, Srinagar… or *Show active alerts*!"
+        )
+    else:
+        return (
+            "🤖 **मैं मरीन इंटेलिजेंस असिस्टेंट हूँ।**\n\n"
+            "मैं भारत के किसी भी शहर का मौसम + तटीय क्षेत्रों की पूरी जानकारी दे सकता हूँ।\n"
+            "अलर्ट एजेंट पहले तटीय क्षेत्रों को प्राथमिकता देता है।"
+        )
+
 def advanced_nlp_agent(user_query):
     query = user_query.lower().strip()
 
@@ -709,7 +558,7 @@ def advanced_nlp_agent(user_query):
             words = re.findall(r'[a-zA-Z]{3,}', query)
             place_candidate = " ".join(words[-2:]) if len(words) >= 2 else (words[-1] if words else None)
 
-        if place_candidate and place_candidate not in ["weather", "temperature", "wind", "safe", "fishing", "alert", "geofence", "zone"]:
+        if place_candidate and place_candidate not in ["weather", "temperature", "wind", "safe", "fishing", "alert"]:
             geo = geocode_location(place_candidate)
             if geo:
                 detected_location = {
@@ -835,7 +684,7 @@ def pfz_agent(location_info, weather_info=None):
         "note": "Real-time SST + wind driven PFZ estimate (Open-Meteo). Official INCOIS: incois.gov.in"
     }
 
-def call_groq_llm(messages, max_tokens=400, temperature=0.3):
+def call_groq_llm(messages, max_tokens=350, temperature=0.3):
     models = ["llama-3.3-70b-versatile", "llama-3.1-8b-instant", "gemma2-9b-it"]
     for model_name in models:
         try:
@@ -852,29 +701,30 @@ def call_groq_llm(messages, max_tokens=400, temperature=0.3):
 
 def response_agent(user_query, nlp_plan, weather_info=None, pfz_info=None, alert_info=None, language="English"):
     intent = nlp_plan.get("intent", "NORMAL_CHAT")
-    lang_inst = get_lang_instruction(language)
+    lang_inst = "Reply in clear English." if language == "English" else "Reply in clear Hindi."
 
     if intent == "GREETING":
         return get_natural_greeting(language)
     elif intent == "BOT_IDENTITY":
         return get_natural_identity(language)
     elif intent == "GRATITUDE":
-        thanks = {
-            "English": "🙏 **You're very welcome! Stay safe!** 🌊",
-            "Hindi": "🙏 **आपका बहुत धन्यवाद! सुरक्षित रहें!** 🌊",
-            "Tamil": "🙏 **நன்றி! பாதுகாப்பாக இருங்கள்!** 🌊",
-            "Telugu": "🙏 **ధన్యవాదాలు! సురక్షితంగా ఉండండి!** 🌊",
-            "Malayalam": "🙏 **നന്ദി! സുരക്ഷിതരായിരിക്കൂ!** 🌊",
-            "Kannada": "🙏 **ಧನ್ಯವಾದಗಳು! ಸುರಕ್ಷಿತವಾಗಿರಿ!** 🌊",
-            "Marathi": "🙏 **धन्यवाद! सुरक्षित राहा!** 🌊",
-            "Gujarati": "🙏 **આભાર! સુરક્ષિત રહો!** 🌊",
-            "Bengali": "🙏 **ধন্যবাদ! নিরাপদ থাকুন!** 🌊"
-        }
-        return thanks.get(language, thanks["English"])
+        return "🙏 **You're very welcome! Stay safe!** 🌊" if language == "English" else "🙏 **आपका बहुत धन्यवाद! सुरक्षित रहें!**"
     elif intent == "LOCATION_AMBIGUOUS":
-        return get_natural_greeting(language)
+        return (
+            "🌊 Please tell me the city or place name.\n\n"
+            "Examples: *Weather in Delhi*, *Temperature in Jaipur*, *Is it safe in Goa?*"
+            if language == "English" else
+            "🌊 कृपया शहर या स्थान का नाम बताएं।\n\nउदाहरण: *दिल्ली का मौसम*, *जयपुर में तापमान*"
+        )
     elif intent == "SHOW_ALERTS":
-        return "🚨 **Real-Time Alert Agent activated.**" if language == "English" else "🚨 **रीयल-टाइम अलर्ट एजेंट सक्रिय।**"
+        return (
+            "🚨 **Real-Time Alert Agent activated.**\n\n"
+            "Scanning **coastal locations first** (fishermen & harbour priority), then inland cities.\n"
+            "Critical & Warning alerts appear at the top."
+            if language == "English" else
+            "🚨 **रीयल-टाइम अलर्ट एजेंट सक्रिय।**\n\n"
+            "पहले तटीय क्षेत्रों की जाँच (मछुआरों की प्राथमिकता), फिर अंतर्देशीय शहर।"
+        )
 
     loc = nlp_plan.get("location")
     if loc and weather_info:
@@ -884,23 +734,18 @@ def response_agent(user_query, nlp_plan, weather_info=None, pfz_info=None, alert
 
         context = f"""
 Location: {full_name}
-Temperature: {weather_info.get('temperature')}°C
-Feels like: {weather_info.get('feels_like')}°C
-Wind: {weather_info.get('wind_speed')} km/h
-Humidity: {weather_info.get('humidity')}%
-Safety Status: {weather_info.get('safety_status')}
-SST: {weather_info.get('sea_surface_temperature')}°C
-Wave Height: {weather_info.get('wave_height')} m
+Weather: Temp {weather_info.get('temperature')}°C | Wind {weather_info.get('wind_speed')} km/h | Humidity {weather_info.get('humidity')}%
+Status: {weather_info.get('safety_status')}
+SST: {weather_info.get('sea_surface_temperature')}°C | Wave: {weather_info.get('wave_height')} m
 """
         if pfz_info:
             context += f"\nBest PFZ: {pfz_info['best_zone']['name']} ({pfz_info['best_zone']['distance']})"
 
-        system_prompt = f"""You are a helpful marine and weather assistant for India.
+        system_prompt = f"""You are a helpful weather & marine assistant for India.
 {lang_inst}
-Give a clear, concise and useful summary of the weather and ocean conditions.
-Mention the safety status clearly.
-If PFZ data is available, recommend the best fishing zone.
-Keep the response short and practical."""
+Give a clear, concise weather summary first. Mention safety status.
+If PFZ data is available, highlight the best fishing zone.
+Keep it short and useful."""
 
         response = call_groq_llm([
             {"role": "system", "content": system_prompt},
@@ -909,13 +754,20 @@ Keep the response short and practical."""
         if response:
             return response
 
-        return f"📍 **{full_name}**\nTemperature: {weather_info.get('temperature')}°C | Wind: {weather_info.get('wind_speed')} km/h | Status: {weather_info.get('safety_status')}"
+        return (
+            f"📍 **Weather for {full_name}**\n\n"
+            f"- Temperature: **{weather_info.get('temperature')}°C**\n"
+            f"- Wind: **{weather_info.get('wind_speed')} km/h**\n"
+            f"- Humidity: **{weather_info.get('humidity')}%**\n"
+            f"- Status: **{weather_info.get('safety_status')}**\n"
+            f"- {weather_info.get('safety_message')}"
+        )
 
     response = call_groq_llm([
-        {"role": "system", "content": f"You are a helpful marine weather assistant for India. {lang_inst}"},
+        {"role": "system", "content": f"You are a helpful assistant for Indian weather and marine information. {lang_inst}"},
         {"role": "user", "content": user_query}
     ])
-    return response or get_natural_greeting(language)
+    return response or "I can check weather for any place in India or marine conditions for coastal ports. Just ask!"
 
 # ====================== RENDER HELPERS ======================
 def clean_text_for_tts(text):
@@ -933,14 +785,14 @@ def render_tts_button(text_to_speak, language="English", auto_play=False, msg_id
     speech_text = clean_text_for_tts(text_to_speak)
     if not speech_text: return
     text_json = json.dumps(speech_text, ensure_ascii=False)
-    lang_code = SUPPORTED_LANGUAGES.get(language, {}).get("tts", "en-IN")
+    lang_code = "en-IN" if language == "English" else "hi-IN"
     uid = f"tts_{abs(hash(speech_text[:40]))}" if not msg_id else f"tts_{msg_id}"
     auto_trigger = f"setTimeout(function(){{ playTTS_{uid}(); }}, 300);" if auto_play else ""
 
     html = f"""
     <div style="margin-top:8px; display:flex; align-items:center; gap:8px;">
         <button id="btn_play_{uid}" onclick="playTTS_{uid}();" style="background:linear-gradient(135deg,#0284c7,#0369a1); color:white; border:none; border-radius:8px; padding:6px 14px; font-size:0.82rem; font-weight:600; cursor:pointer;">
-            🔊 Listen
+            🔊 Listen ({language})
         </button>
         <button id="btn_stop_{uid}" onclick="stopTTS_{uid}();" style="display:none; background:#334155; color:#cbd5e1; border:none; border-radius:8px; padding:6px 12px; cursor:pointer;">⏹️ Stop</button>
     </div>
@@ -973,10 +825,17 @@ def render_tts_button(text_to_speak, language="English", auto_play=False, msg_id
     st.markdown(html, unsafe_allow_html=True)
 
 def render_monitoring_dashboard(monitor_data):
+    """Beautiful coastal monitoring cards matching the screenshot"""
     if not monitor_data:
+        st.warning("Monitoring temporarily unavailable.")
         return
 
-    color_map = {"Safe": "#10B981", "Moderately Safe": "#F59E0B", "Not Safe": "#EF4444"}
+    # Safety color mapping
+    color_map = {
+        "Safe": "#10B981",
+        "Moderately Safe": "#F59E0B",
+        "Not Safe": "#EF4444"
+    }
 
     cols = st.columns(5)
     for idx, data in enumerate(monitor_data[:5]):
@@ -985,189 +844,79 @@ def render_monitoring_dashboard(monitor_data):
             sst = data.get("sst")
             wave = data.get("wave_height")
             temp = data.get("temperature")
-            wind = data.get("wind_speed")
 
             st.markdown(f"""
             <div style="
-                background: rgba(15, 40, 70, 0.75);
-                backdrop-filter: blur(14px);
+                background: rgba(15, 40, 70, 0.72);
+                backdrop-filter: blur(12px);
                 border: 1px solid rgba(255,255,255,0.18);
                 border-radius: 18px;
-                padding: 14px 10px;
+                padding: 16px 12px;
                 text-align: center;
                 color: white;
                 box-shadow: 0 8px 32px rgba(0,0,0,0.25);
-                min-height: 185px;
+                min-height: 160px;
             ">
-                <div style="font-size:1.05rem; font-weight:700; margin-bottom:6px;">{data['name']}</div>
+                <div style="font-size:1.05rem; font-weight:700; margin-bottom:8px;">{data['name']}</div>
                 <div style="
                     display:inline-block;
                     background:{badge_color};
                     color:white;
-                    font-size:0.7rem;
+                    font-size:0.72rem;
                     font-weight:700;
-                    padding:3px 10px;
+                    padding:4px 12px;
                     border-radius:20px;
-                    margin-bottom:10px;
+                    margin-bottom:12px;
                 ">{data['safety_status']}</div>
-                <div style="font-size:0.88rem; margin:3px 0;">💨 {wind} km/h</div>
-                <div style="font-size:0.82rem; opacity:0.9;">🌡️ Air {temp}°C</div>
-                <div style="font-size:0.82rem; opacity:0.9;">
-                    {f"🌊 Wave {wave} m" if wave is not None else "🌊 Wave —"}
+                <div style="font-size:0.9rem; margin:4px 0;">💨 {data['wind_speed']} km/h</div>
+                <div style="font-size:0.82rem; opacity:0.9; margin:3px 0;">
+                    {f"🌊 {wave} m  |  SST {sst}°C" if wave is not None and sst is not None else f"SST {sst}°C" if sst else ""}
                 </div>
-                <div style="font-size:0.82rem; opacity:0.9;">
-                    {f"🌊 SST {sst}°C" if sst is not None else "🌊 SST —"}
-                </div>
+                <div style="font-size:0.82rem; opacity:0.85;">Air {temp}°C</div>
             </div>
             """, unsafe_allow_html=True)
 
-def deg_to_compass(deg):
-    if deg is None:
-        return "—"
-    points = ["N","NNE","NE","ENE","E","ESE","SE","SSE","S","SSW","SW","WSW","W","WNW","NW","NNW"]
-    return points[round(deg / 22.5) % 16]
-
-def render_full_ocean_meteo_card(weather_data, location_name):
+def render_weather_card(weather_data, location_name):
     if not weather_data or weather_data.get("status") != "success":
         return
-
     safety_color_map = {"green": "#10B981", "orange": "#F59E0B", "red": "#EF4444"}
     accent = safety_color_map.get(weather_data.get("safety_color", "green"), "#3B82F6")
-
-    has_ocean_data = any([
-        weather_data.get("sea_surface_temperature") is not None,
-        weather_data.get("wave_height") is not None,
-        weather_data.get("wave_period") is not None,
-        weather_data.get("ocean_current_velocity") is not None,
-        weather_data.get("swell_wave_height") is not None,
-        weather_data.get("wind_wave_height") is not None
-    ])
-
-    if has_ocean_data:
-        ocean_section = f"""
-        <div style="font-size:0.9rem; font-weight:600; margin:8px 0 8px; color:#67e8f9;">🌊 Oceanographic Data</div>
-        <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:10px;">
-            <div style="background:rgba(14, 165, 233, 0.15); border-radius:12px; padding:10px; text-align:center;">
-                <div style="font-size:0.7rem; opacity:0.8;">SST</div>
-                <div style="font-weight:700; font-size:1.15rem;">{weather_data.get('sea_surface_temperature') if weather_data.get('sea_surface_temperature') is not None else '—'}</div>
-                <div style="font-size:0.7rem;">°C</div>
-            </div>
-            <div style="background:rgba(14, 165, 233, 0.15); border-radius:12px; padding:10px; text-align:center;">
-                <div style="font-size:0.7rem; opacity:0.8;">WAVE HT</div>
-                <div style="font-weight:700; font-size:1.15rem;">{weather_data.get('wave_height') if weather_data.get('wave_height') is not None else '—'}</div>
-                <div style="font-size:0.7rem;">m</div>
-            </div>
-            <div style="background:rgba(14, 165, 233, 0.15); border-radius:12px; padding:10px; text-align:center;">
-                <div style="font-size:0.7rem; opacity:0.8;">WAVE PERIOD</div>
-                <div style="font-weight:700; font-size:1.15rem;">{weather_data.get('wave_period') if weather_data.get('wave_period') is not None else '—'}</div>
-                <div style="font-size:0.7rem;">s</div>
-            </div>
-            <div style="background:rgba(14, 165, 233, 0.15); border-radius:12px; padding:10px; text-align:center;">
-                <div style="font-size:0.7rem; opacity:0.8;">WAVE DIR</div>
-                <div style="font-weight:700; font-size:1.05rem;">{deg_to_compass(weather_data.get('wave_direction'))}</div>
-            </div>
-            <div style="background:rgba(14, 165, 233, 0.15); border-radius:12px; padding:10px; text-align:center;">
-                <div style="font-size:0.7rem; opacity:0.8;">CURRENT</div>
-                <div style="font-weight:700; font-size:1.15rem;">{weather_data.get('ocean_current_velocity') if weather_data.get('ocean_current_velocity') is not None else '—'}</div>
-                <div style="font-size:0.7rem;">m/s</div>
-            </div>
-            <div style="background:rgba(14, 165, 233, 0.15); border-radius:12px; padding:10px; text-align:center;">
-                <div style="font-size:0.7rem; opacity:0.8;">CURRENT DIR</div>
-                <div style="font-weight:700; font-size:1.05rem;">{deg_to_compass(weather_data.get('ocean_current_direction'))}</div>
-            </div>
-            <div style="background:rgba(14, 165, 233, 0.15); border-radius:12px; padding:10px; text-align:center;">
-                <div style="font-size:0.7rem; opacity:0.8;">SWELL HT</div>
-                <div style="font-weight:700; font-size:1.15rem;">{weather_data.get('swell_wave_height') if weather_data.get('swell_wave_height') is not None else '—'}</div>
-                <div style="font-size:0.7rem;">m</div>
-            </div>
-            <div style="background:rgba(14, 165, 233, 0.15); border-radius:12px; padding:10px; text-align:center;">
-                <div style="font-size:0.7rem; opacity:0.8;">WIND WAVE</div>
-                <div style="font-weight:700; font-size:1.15rem;">{weather_data.get('wind_wave_height') if weather_data.get('wind_wave_height') is not None else '—'}</div>
-                <div style="font-size:0.7rem;">m</div>
-            </div>
-        </div>
-        """
-    else:
-        ocean_section = """
-        <div style="margin-top:16px; padding:12px; background:rgba(14,165,233,0.12); border-radius:12px; text-align:center; font-size:0.88rem; color:#7dd3fc;">
-            🌊 Oceanographic data is only available for <b>coastal locations</b>.
-        </div>
-        """
+    wind_deg = weather_data.get("wind_direction", 0) or 0
+    sst = weather_data.get("sea_surface_temperature")
+    wave = weather_data.get("wave_height")
 
     html = f"""
-    <div style="
-        background: rgba(10, 30, 55, 0.82);
-        backdrop-filter: blur(16px);
-        border: 1px solid rgba(255,255,255,0.15);
-        border-radius: 20px;
-        padding: 22px;
-        color: white;
-        margin: 12px 0 20px;
-    ">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
-            <div style="font-size:1.25rem; font-weight:700;">📍 {location_name}</div>
-            <div style="background:{accent}; color:white; padding:5px 14px; border-radius:50px; font-size:0.8rem; font-weight:700;">
-                {weather_data.get('safety_status')}
+    <div style="background: linear-gradient(160deg, rgba(15,23,42,0.85) 0%, rgba(30,41,59,0.85) 100%); 
+                border-radius: 20px; padding: 20px; color: white; max-width: 480px; margin: 10px 0 15px; 
+                border: 1px solid rgba(255,255,255,0.15); backdrop-filter: blur(10px);">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+            <div style="font-size:1.15rem; font-weight:600;">📍 {location_name}</div>
+            <div style="background:{accent}; color:white; padding:4px 12px; border-radius:50px; font-size:0.75rem; font-weight:700;">{weather_data.get('safety_status')}</div>
+        </div>
+        <div style="text-align:center; margin:8px 0;">
+            <span style="font-size:3.2rem; font-weight:300;">{weather_data.get('temperature', '--')}</span>
+            <span style="font-size:1.4rem; opacity:0.7;">°C</span>
+        </div>
+        <div style="text-align:center; font-size:0.9rem; opacity:0.9; margin-bottom:10px;">{weather_data.get('safety_message', '')}</div>
+        <div style="display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:8px;">
+            <div style="background:rgba(255,255,255,0.08); border-radius:10px; padding:10px 5px; text-align:center;">
+                <div>💨</div><div style="font-weight:600;">{weather_data.get('wind_speed', '--')}</div>
+                <div style="font-size:0.65rem; opacity:0.7;">WIND</div>
+            </div>
+            <div style="background:rgba(255,255,255,0.08); border-radius:10px; padding:10px 5px; text-align:center;">
+                <div style="transform:rotate({wind_deg}deg);">➤</div><div style="font-weight:600;">{wind_deg}°</div>
+                <div style="font-size:0.65rem; opacity:0.7;">DIR</div>
+            </div>
+            <div style="background:rgba(255,255,255,0.08); border-radius:10px; padding:10px 5px; text-align:center;">
+                <div>💧</div><div style="font-weight:600;">{weather_data.get('humidity', '--')}%</div>
+                <div style="font-size:0.65rem; opacity:0.7;">HUMIDITY</div>
+            </div>
+            <div style="background:rgba(255,255,255,0.08); border-radius:10px; padding:10px 5px; text-align:center;">
+                <div>☁️</div><div style="font-weight:600;">{weather_data.get('cloud_cover', '--')}%</div>
+                <div style="font-size:0.65rem; opacity:0.7;">CLOUD</div>
             </div>
         </div>
-
-        <div style="text-align:center; margin-bottom:12px;">
-            <span style="font-size:3.4rem; font-weight:300;">{weather_data.get('temperature', '--')}</span>
-            <span style="font-size:1.5rem; opacity:0.7;">°C</span>
-            <div style="font-size:0.95rem; opacity:0.85; margin-top:2px;">
-                Feels like {weather_data.get('feels_like', '--')}°C • {weather_data.get('weather_desc', '')}
-            </div>
-        </div>
-
-        <div style="font-size:0.9rem; font-weight:600; margin:14px 0 8px; color:#7dd3fc;">🌤 Meteorological Data</div>
-        <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:10px; margin-bottom:16px;">
-            <div style="background:rgba(255,255,255,0.07); border-radius:12px; padding:10px; text-align:center;">
-                <div style="font-size:0.7rem; opacity:0.7;">WIND</div>
-                <div style="font-weight:700; font-size:1.1rem;">{weather_data.get('wind_speed', '--')}</div>
-                <div style="font-size:0.7rem;">km/h</div>
-            </div>
-            <div style="background:rgba(255,255,255,0.07); border-radius:12px; padding:10px; text-align:center;">
-                <div style="font-size:0.7rem; opacity:0.7;">DIRECTION</div>
-                <div style="font-weight:700; font-size:1.05rem;">{deg_to_compass(weather_data.get('wind_direction'))}</div>
-                <div style="font-size:0.7rem;">{weather_data.get('wind_direction', '--')}°</div>
-            </div>
-            <div style="background:rgba(255,255,255,0.07); border-radius:12px; padding:10px; text-align:center;">
-                <div style="font-size:0.7rem; opacity:0.7;">GUSTS</div>
-                <div style="font-weight:700; font-size:1.1rem;">{weather_data.get('wind_gusts') or '—'}</div>
-                <div style="font-size:0.7rem;">km/h</div>
-            </div>
-            <div style="background:rgba(255,255,255,0.07); border-radius:12px; padding:10px; text-align:center;">
-                <div style="font-size:0.7rem; opacity:0.7;">HUMIDITY</div>
-                <div style="font-weight:700; font-size:1.1rem;">{weather_data.get('humidity', '--')}%</div>
-            </div>
-            <div style="background:rgba(255,255,255,0.07); border-radius:12px; padding:10px; text-align:center;">
-                <div style="font-size:0.7rem; opacity:0.7;">PRESSURE</div>
-                <div style="font-weight:700; font-size:1.05rem;">{round(weather_data.get('pressure_msl') or 0)}</div>
-                <div style="font-size:0.7rem;">hPa</div>
-            </div>
-            <div style="background:rgba(255,255,255,0.07); border-radius:12px; padding:10px; text-align:center;">
-                <div style="font-size:0.7rem; opacity:0.7;">CLOUD</div>
-                <div style="font-weight:700; font-size:1.1rem;">{weather_data.get('cloud_cover', '--')}%</div>
-            </div>
-            <div style="background:rgba(255,255,255,0.07); border-radius:12px; padding:10px; text-align:center;">
-                <div style="font-size:0.7rem; opacity:0.7;">VISIBILITY</div>
-                <div style="font-weight:700; font-size:1.05rem;">
-                    {round((weather_data.get('visibility') or 0)/1000, 1) if weather_data.get('visibility') else '—'}
-                </div>
-                <div style="font-size:0.7rem;">km</div>
-            </div>
-            <div style="background:rgba(255,255,255,0.07); border-radius:12px; padding:10px; text-align:center;">
-                <div style="font-size:0.7rem; opacity:0.7;">RAIN</div>
-                <div style="font-weight:700; font-size:1.1rem;">{weather_data.get('precipitation') or 0}</div>
-                <div style="font-size:0.7rem;">mm</div>
-            </div>
-        </div>
-
-        {ocean_section}
-
-        <div style="margin-top:14px; font-size:0.85rem; opacity:0.85; text-align:center;">
-            {weather_data.get('safety_message', '')}
-        </div>
+        {f'<div style="margin-top:10px; text-align:center; font-size:0.85rem;">🌊 SST: {sst}°C &nbsp;|&nbsp; Wave: {wave} m</div>' if sst or wave else ''}
     </div>
     """
     st.markdown(html, unsafe_allow_html=True)
@@ -1193,8 +942,10 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
+# ---------- Beautiful Beach Background + Global Styles ----------
 st.markdown("""
 <style>
+/* Full page beach background */
 .stApp {
     background-image: linear-gradient(rgba(0, 40, 80, 0.35), rgba(0, 30, 60, 0.45)),
                       url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');
@@ -1203,10 +954,14 @@ st.markdown("""
     background-attachment: fixed;
     background-repeat: no-repeat;
 }
+
+/* Make main content area transparent so background shows */
 .main .block-container {
     background: transparent !important;
     padding-top: 1.5rem !important;
 }
+
+/* Sidebar glass style */
 [data-testid="stSidebar"] {
     background: rgba(8, 30, 55, 0.88) !important;
     backdrop-filter: blur(18px);
@@ -1215,10 +970,14 @@ st.markdown("""
 [data-testid="stSidebar"] * {
     color: #e2e8f0 !important;
 }
+
+/* Headers */
 h1, h2, h3, h4 {
     color: white !important;
     text-shadow: 0 2px 8px rgba(0,0,0,0.4);
 }
+
+/* Chat dock */
 .st-key-chat_dock_container {
     position: fixed !important;
     bottom: 18px !important;
@@ -1233,17 +992,23 @@ h1, h2, h3, h4 {
     padding: 10px 16px !important;
     box-shadow: 0 -10px 40px rgba(0,0,0,0.5) !important;
 }
+
 .bottom-scroll-spacer { height: 130px; }
+
+/* Buttons */
 .stButton > button {
     border-radius: 12px !important;
     font-weight: 600 !important;
 }
+
+/* Hide default Streamlit branding a bit */
 #MainMenu {visibility: hidden;}
 footer {visibility: hidden;}
 header {visibility: hidden;}
 </style>
 """, unsafe_allow_html=True)
 
+# Session state
 if "language" not in st.session_state: st.session_state.language = "English"
 if "messages" not in st.session_state: st.session_state.messages = []
 if "map_location" not in st.session_state: st.session_state.map_location = None
@@ -1256,6 +1021,7 @@ if "auto_speak" not in st.session_state: st.session_state.auto_speak = True
 if "voice_mode_triggered" not in st.session_state: st.session_state.voice_mode_triggered = False
 if "show_alerts_panel" not in st.session_state: st.session_state.show_alerts_panel = False
 
+# ---------- HEADER ----------
 now = datetime.now(ZoneInfo("Asia/Kolkata"))
 
 st.markdown(f"""
@@ -1267,17 +1033,24 @@ st.markdown(f"""
     padding: 16px 24px;
     margin-bottom: 18px;
     color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
 ">
-    <div style="font-size:1.1rem; font-weight:600;">
-        📅 {now.strftime('%d %B %Y')} &nbsp;&nbsp;|&nbsp;&nbsp; 🕒 {now.strftime('%I:%M %p')}
-    </div>
-    <div style="font-size:0.88rem; opacity:0.9; margin-top:4px;">
-        Multi-language Voice-to-Text Marine Intelligence Platform • 9 Languages Supported • Real-time Ocean + Weather + Geofencing
+    <div>
+        <div style="font-size:1.1rem; font-weight:600;">
+            📅 {now.strftime('%d %B %Y')} &nbsp;&nbsp;|&nbsp;&nbsp; 🕒 {now.strftime('%I:%M %p')}
+        </div>
+        <div style="font-size:0.88rem; opacity:0.9; margin-top:4px;">
+            Instant agentic platform with real oceanographic data (Open-Meteo Marine), intelligent marine NLP, satellite maps, multi-route navigation, Alert Agent & voice assistance.
+        </div>
     </div>
 </div>
 """, unsafe_allow_html=True)
 
-# Live Coastal Monitoring
+# ---------- LIVE COASTAL MONITORING ----------
 st.markdown("""
 <div style="
     background: rgba(15, 40, 70, 0.72);
@@ -1289,12 +1062,18 @@ st.markdown("""
 ">
     <div style="display:flex; align-items:center; gap:10px; margin-bottom:6px;">
         <span style="font-size:1.35rem;">📡</span>
-        <span style="font-size:1.25rem; font-weight:700; color:white;">Live Coastal Monitoring</span>
+        <span style="font-size:1.25rem; font-weight:700; color:white;">Live Coastal Monitoring (Real Ocean Data)</span>
     </div>
-    <div style="font-size:0.85rem; color:#94a3b8;">SST + Waves + Wind from Open-Meteo | Auto-refreshes every ~2 mins</div>
+    <div style="font-size:0.85rem; color:#94a3b8; margin-bottom:16px;">
+        SST + Waves + Wind from Open-Meteo Marine | Auto-refreshes every ~2 mins
+    </div>
 </div>
 """, unsafe_allow_html=True)
 
+monitor_data = cached_continuous_monitor()
+render_monitoring_dashboard(monitor_data)
+
+# Action buttons
 col_a1, col_a2, col_a3 = st.columns([1.3, 1.1, 1.6])
 with col_a1:
     if st.button("🚨 View Active Alerts", use_container_width=True, type="primary"):
@@ -1304,13 +1083,7 @@ with col_a2:
         st.cache_data.clear()
         st.rerun()
 with col_a3:
-    st.caption(f"Monitoring {len(COASTAL_LOCATIONS)} coastal locations")
-
-monitor_data = cached_continuous_monitor()
-if not monitor_data:
-    st.warning("⚠️ Monitoring temporarily unavailable. Click **Refresh Monitoring**.")
-else:
-    render_monitoring_dashboard(monitor_data)
+    st.caption(f"Monitoring {len(COASTAL_LOCATIONS)} coastal + {len(INLAND_MONITORED)} inland locations")
 
 if st.session_state.show_alerts_panel:
     st.markdown("---")
@@ -1321,73 +1094,66 @@ if st.session_state.show_alerts_panel:
 
 st.markdown("<br>", unsafe_allow_html=True)
 
-# ====================== SIDEBAR ======================
+# ---------- SIDEBAR ----------
 with st.sidebar:
-    st.markdown("### 🌐 Language / भाषा")
-    language_options = list(SUPPORTED_LANGUAGES.keys())
-    language = st.selectbox(
-        "Select Language",
-        language_options,
-        index=language_options.index(st.session_state.language) if st.session_state.language in language_options else 0,
-        format_func=lambda x: f"{SUPPORTED_LANGUAGES[x]['name']} ({x})"
-    )
+    st.markdown("### 🌐 Language")
+    language = st.radio("Select Language", ["English", "Hindi"],
+                        index=0 if st.session_state.language == "English" else 1,
+                        label_visibility="collapsed")
     st.session_state.language = language
-
-    current_lang_info = SUPPORTED_LANGUAGES[language]
-    st.caption(f"Voice language: **{current_lang_info['name']}** (`{current_lang_info['speech_recognition']}`)")
 
     st.markdown("---")
     st.markdown("### 🔊 Voice & Speech")
     st.session_state.auto_speak = st.toggle("Auto-Speak Responses", value=st.session_state.auto_speak)
 
     st.markdown("---")
-    st.markdown("### 🚤 Vessel Speed")
+    st.markdown("### 🚤 Vessel Cruising Speed")
     speed_option = st.selectbox(
-        "Boat Type",
+        "Select Trawler / Boat Type",
         ["Motorized Boat (8 knots)", "Mechanized Trawler (10 knots)", "Fiber Speedboat (16 knots)"],
-        index=1
+        index=1,
+        label_visibility="collapsed"
     )
     st.session_state.boat_speed_knots = 8 if "8 knots" in speed_option else 16 if "16 knots" in speed_option else 10
 
     st.markdown("---")
-    st.markdown("### 🛡️ Geofencing")
-    st.caption("Circular zones around major harbours")
-    for name in GEOFENCES:
-        st.markdown(f"- {name}")
-
-    st.markdown("---")
-    st.markdown("### 🆘 24×7 Helpline")
-    st.link_button("💬 WhatsApp", f"https://wa.me/{WHATSAPP_NUMBER}?text={quote('Hello, I need marine help.')}", use_container_width=True)
-    st.markdown(f'<a href="tel:{PHONE_NUMBER}"><button style="width:100%;padding:10px;background:#25D366;color:white;border:none;border-radius:10px;cursor:pointer;font-weight:600;">📞 Call</button></a>', unsafe_allow_html=True)
+    st.markdown("### 🆘 24×7 Marine Helpline")
+    st.link_button("💬 Chat on WhatsApp", f"https://wa.me/{WHATSAPP_NUMBER}?text={quote('Hello, I need weather / marine help.')}", use_container_width=True)
+    st.markdown(f'''
+        <a href="tel:{PHONE_NUMBER}" style="text-decoration:none;">
+            <button style="width:100%; padding:10px; background:#25D366; color:white; border:none; border-radius:10px; cursor:pointer; font-weight:600;">
+                📞 Call Helpline
+            </button>
+        </a>
+    ''', unsafe_allow_html=True)
 
     st.markdown("---")
     st.markdown("### 💡 Try Asking")
     st.markdown("""
-    - Weather in Delhi  
-    - Is it safe in Goa?  
-    - Best PFZ near Kochi  
-    - Geofence in Mumbai  
-    - Show active alerts  
+    - *Weather in Delhi*
+    - *Temperature in Jaipur*
+    - *Is it raining in Hyderabad?*
+    - *Is it safe to fish in Goa?*
+    - *Show active alerts*
+    - *Best PFZ near Kochi*
     """)
 
 # Chat history
 for idx, msg in enumerate(st.session_state.messages):
     with st.chat_message(msg["role"]):
         if msg.get("weather_data"):
-            render_full_ocean_meteo_card(msg["weather_data"], msg.get("location_name", "Location"))
+            render_weather_card(msg["weather_data"], msg.get("location_name", "Location"))
         if msg.get("alert_data"):
             render_alert_banner(msg["alert_data"])
         if msg.get("pfz_data"):
             render_pfz_section(msg["pfz_data"])
-        if msg.get("show_geofence") and msg.get("lat") and msg.get("lon"):
-            render_geofence_status(msg["lat"], msg["lon"], msg.get("location_name", "Location"))
         st.markdown(msg["content"])
         if msg["role"] == "assistant":
             render_tts_button(msg["content"], st.session_state.language, auto_play=False, msg_id=f"hist_{idx}")
         if msg.get("agent_log"):
             st.caption(f"🧠 **Agents:** {' → '.join(msg['agent_log'])}")
 
-# Map + Geofences
+# Satellite map (coastal only)
 if st.session_state.map_location and st.session_state.map_location.get("is_coastal", True):
     loc = st.session_state.map_location
     harbour_name = loc.get("harbour_name", f"{loc['name']} Harbour")
@@ -1395,7 +1161,7 @@ if st.session_state.map_location and st.session_state.map_location.get("is_coast
     origin_lon = loc.get("harbour_lon", loc["lon"])
 
     st.markdown("---")
-    st.subheader(f"🛰️ Satellite Map + Geofences — {loc['name']}")
+    st.subheader(f"🛰️ Satellite Map & Routes — {loc['name']}")
 
     has_pfz = st.session_state.pfz_data and st.session_state.pfz_data.get("status") == "success"
     all_routes = []
@@ -1427,33 +1193,21 @@ if st.session_state.map_location and st.session_state.map_location.get("is_coast
                         <div style="font-size:0.85rem;">📍 {r['distance_km']} km ({r['distance_nm']} NM)</div>
                         <div style="font-size:0.85rem;">⏱️ {r['eta']}</div>
                         <div style="font-size:0.85rem;">🧭 {r['bearing']}° ({r['compass_dir']})</div>
+                        <div style="font-size:0.8rem; color:#94a3b8;">⛽ ~{r['fuel_l']} L | SST {z['sst']}°C</div>
                     </div>
                 """, unsafe_allow_html=True)
-                st.link_button(f"📍 Open in Google Maps", r["gmaps_url"], use_container_width=True)
+                st.link_button(f"📍 Open {z['type']} in Google Maps", r["gmaps_url"], use_container_width=True)
 
-        active_zone_type = st.radio("Select Active Route:", ["🟢 Primary", "🔵 Secondary", "🟠 Alternate"],
-                                    index=st.session_state.selected_zone_index, horizontal=True)
+        active_zone_type = st.radio("Select Active Route:",
+            ["🟢 Primary", "🔵 Secondary", "🟠 Alternate"],
+            index=st.session_state.selected_zone_index, horizontal=True)
         st.session_state.selected_zone_index = 0 if "Primary" in active_zone_type else 1 if "Secondary" in active_zone_type else 2
+        active_route = all_routes[st.session_state.selected_zone_index]
 
     m = folium.Map(location=[origin_lat, origin_lon], zoom_start=10, tiles=None)
     folium.TileLayer(tiles="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", attr="Esri", name="Satellite").add_to(m)
     folium.TileLayer(tiles="https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}", attr="Esri", name="Labels", overlay=True).add_to(m)
     folium.Marker([origin_lat, origin_lon], popup=f"<b>{harbour_name}</b>", tooltip=harbour_name, icon=folium.Icon(color="red", icon="info-sign")).add_to(m)
-
-    for name, fence in GEOFENCES.items():
-        center = fence["center"]
-        folium.Circle(
-            location=center,
-            radius=fence["radius_km"] * 1000,
-            color=fence["color"],
-            fill=True,
-            fill_color=fence["color"],
-            fill_opacity=0.15,
-            weight=2,
-            popup=f"<b>{name}</b><br>{fence['description']}<br>Radius: {fence['radius_km']} km",
-            tooltip=name
-        ).add_to(m)
-        folium.CircleMarker(location=center, radius=6, color=fence["color"], fill=True, fill_color=fence["color"], fill_opacity=0.9, popup=name).add_to(m)
 
     if has_pfz:
         for i, r in enumerate(all_routes):
@@ -1473,40 +1227,33 @@ if st.session_state.map_location and st.session_state.map_location.get("is_coast
 
 st.markdown("<div class='bottom-scroll-spacer'></div>", unsafe_allow_html=True)
 
-# ====================== CHAT DOCK WITH MULTI-LANGUAGE VOICE ======================
+# ---------- CHAT DOCK ----------
 def submit_text():
     text = st.session_state.get("user_typed_input", "").strip()
     if text:
         st.session_state.pending_prompt = text
         st.session_state.user_typed_input = ""
 
-current_lang = st.session_state.language
-lang_info = SUPPORTED_LANGUAGES[current_lang]
-speech_lang = lang_info["speech_recognition"]
-whisper_lang = lang_info["whisper"]
-
 with st.container(key="chat_dock_container"):
-    # Language indicator
-    st.markdown(f"""
-        <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">
-            <span style="font-size:0.75rem; color:#38bdf8; font-weight:600;">Voice Language:</span>
-            <span style="background:rgba(56,189,248,0.2); border:1px solid rgba(56,189,248,0.4); color:#e2e8f0; border-radius:12px; font-size:0.72rem; padding:2px 10px;">
-                {lang_info['name']} ({speech_lang})
-            </span>
-        </div>
-    """, unsafe_allow_html=True)
-
     st.markdown("""
         <div style="display:flex; gap:8px; margin-bottom:8px; overflow-x:auto; padding-bottom:4px;">
             <span style="font-size:0.75rem; color:#38bdf8; font-weight:600; align-self:center;">Quick:</span>
             <button onclick="window.submitMarinePrompt && window.submitMarinePrompt('Is it safe to fish in Goa?', false)" 
-                style="background:rgba(56,189,248,0.15); border:1px solid rgba(56,189,248,0.4); color:#e2e8f0; border-radius:14px; font-size:0.72rem; padding:3px 12px; cursor:pointer;">🌊 Goa Safety</button>
+                style="background:rgba(56,189,248,0.15); border:1px solid rgba(56,189,248,0.4); color:#e2e8f0; border-radius:14px; font-size:0.72rem; padding:3px 12px; cursor:pointer;">
+                🌊 Goa Safety
+            </button>
             <button onclick="window.submitMarinePrompt && window.submitMarinePrompt('Show active alerts', false)" 
-                style="background:rgba(56,189,248,0.15); border:1px solid rgba(56,189,248,0.4); color:#e2e8f0; border-radius:14px; font-size:0.72rem; padding:3px 12px; cursor:pointer;">🚨 Alerts</button>
+                style="background:rgba(56,189,248,0.15); border:1px solid rgba(56,189,248,0.4); color:#e2e8f0; border-radius:14px; font-size:0.72rem; padding:3px 12px; cursor:pointer;">
+                🚨 Active Alerts
+            </button>
             <button onclick="window.submitMarinePrompt && window.submitMarinePrompt('Best PFZ near Kochi', false)" 
-                style="background:rgba(56,189,248,0.15); border:1px solid rgba(56,189,248,0.4); color:#e2e8f0; border-radius:14px; font-size:0.72rem; padding:3px 12px; cursor:pointer;">🎯 Kochi PFZ</button>
-            <button onclick="window.submitMarinePrompt && window.submitMarinePrompt('Geofence status in Mumbai', false)" 
-                style="background:rgba(56,189,248,0.15); border:1px solid rgba(56,189,248,0.4); color:#e2e8f0; border-radius:14px; font-size:0.72rem; padding:3px 12px; cursor:pointer;">🛡️ Geofence</button>
+                style="background:rgba(56,189,248,0.15); border:1px solid rgba(56,189,248,0.4); color:#e2e8f0; border-radius:14px; font-size:0.72rem; padding:3px 12px; cursor:pointer;">
+                🎯 Kochi PFZ
+            </button>
+            <button onclick="window.submitMarinePrompt && window.submitMarinePrompt('Hi', false)" 
+                style="background:rgba(56,189,248,0.15); border:1px solid rgba(56,189,248,0.4); color:#e2e8f0; border-radius:14px; font-size:0.72rem; padding:3px 12px; cursor:pointer;">
+                👋 Say Hi
+            </button>
         </div>
         <script>
         window.submitMarinePrompt = function(text, isVoice) {
@@ -1523,47 +1270,26 @@ with st.container(key="chat_dock_container"):
     with input_col:
         st.text_input(
             "Ask anything...",
-            placeholder=f"Type or speak in {lang_info['name']}... (Weather in Delhi, गोवा में मौसम, etc.)",
+            placeholder="Type question or click Speak (e.g. Is it safe to fish in Goa?, Show alerts)...",
             key="user_typed_input",
             on_change=submit_text,
             label_visibility="collapsed"
         )
     with mic_col:
-        # Multi-language Live Speak button
+        speech_lang = "en-IN" if st.session_state.language == "English" else "hi-IN"
         st.markdown(f"""
             <button onclick="
                 var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-                if (!SR) {{ 
-                    alert('Please use Chrome or Edge browser for Live Speak.\\nFor best accuracy use High-Accuracy Voice (Whisper) below.'); 
-                    return; 
-                }}
-                var b = this; 
-                b.style.background='#dc2626'; 
-                b.innerHTML='🔴 Listening...';
-                var r = new SR(); 
-                r.lang = '{speech_lang}'; 
-                r.interimResults = true;
-                r.continuous = false;
+                if (!SR) {{ alert('Use Chrome/Edge for live speech'); return; }}
+                var b = this; b.style.background='#dc2626'; b.innerHTML='🔴 Listening...';
+                var r = new SR(); r.lang='{speech_lang}'; r.interimResults=true;
                 r.onresult = function(e) {{
                     if (e.results[0].isFinal) {{
-                        b.style.background='#16a34a'; 
-                        b.innerHTML='✅ Done';
+                        b.style.background='#16a34a'; b.innerHTML='✅ Done';
                         window.submitMarinePrompt(e.results[0][0].transcript, true);
                     }}
                 }};
-                r.onerror = function(e) {{
-                    console.log('Speech error:', e.error);
-                    b.style.background='#0284c7'; 
-                    b.innerHTML='🎙️ Live Speak';
-                    if(e.error === 'not-allowed') alert('Microphone permission denied');
-                    else if(e.error === 'no-speech') alert('No speech detected. Please try again.');
-                }};
-                r.onend = function() {{ 
-                    setTimeout(function(){{
-                        b.style.background='#0284c7'; 
-                        b.innerHTML='🎙️ Live Speak';
-                    }}, 1500); 
-                }};
+                r.onerror = r.onend = function() {{ setTimeout(()=>{{b.style.background='#0284c7'; b.innerHTML='🎙️ Live Speak';}}, 2000); }};
                 r.start();
             " style="width:100%; height:42px; background:#0284c7; color:white; border:none; border-radius:12px; font-weight:700; cursor:pointer;">
                 🎙️ Live Speak
@@ -1572,16 +1298,10 @@ with st.container(key="chat_dock_container"):
     with send_col:
         st.button("Send ➤", on_click=submit_text, use_container_width=True, type="primary")
 
-    # High-Accuracy Multi-Language Whisper
-    with st.expander(f"🎙️ High-Accuracy Voice (Whisper) — {lang_info['name']}", expanded=False):
-        st.caption(f"Best accuracy for **{lang_info['name']}**. Record your voice below.")
-        audio_file = st.audio_input(
-            f"Record in {lang_info['name']}",
-            label_visibility="collapsed",
-            key="dock_mic_input"
-        )
+    with st.expander("🎙️ High-Accuracy Voice (Whisper)", expanded=False):
+        audio_file = st.audio_input("Record", label_visibility="collapsed", key="dock_mic_input")
 
-# Handle Live Speak query params
+# Handle voice query params
 if "v_prompt" in st.query_params:
     voice_text = str(st.query_params.get("v_prompt", "")).strip()
     is_from_voice = str(st.query_params.get("from_voice", "1")) == "1"
@@ -1592,29 +1312,25 @@ if "v_prompt" in st.query_params:
     if voice_text:
         st.session_state.pending_prompt = voice_text
         if is_from_voice: st.session_state.voice_mode_triggered = True
-        st.toast(f"🗣️ Heard ({lang_info['name']}): {voice_text}", icon="🎙️")
+        st.toast(f"🗣️ Heard: {voice_text}", icon="🎙️")
 
-# Handle High-Accuracy Whisper
 if audio_file is not None:
-    try:
-        audio_bytes = audio_file.getvalue()
-    except:
-        audio_bytes = audio_file.read()
-
+    try: audio_bytes = audio_file.getvalue()
+    except: audio_bytes = audio_file.read()
     if audio_bytes and len(audio_bytes) > 200:
         audio_hash = hashlib.md5(audio_bytes).hexdigest()
         if st.session_state.last_audio_hash != audio_hash:
             st.session_state.last_audio_hash = audio_hash
-            with st.spinner(f"🎧 Transcribing in {lang_info['name']}..."):
+            with st.spinner("🎧 Transcribing..."):
                 transcribed = transcribe_voice_query(audio_bytes, st.session_state.language)
                 if transcribed:
                     st.session_state.pending_prompt = transcribed
                     st.session_state.voice_mode_triggered = True
-                    st.toast(f"🗣️ {lang_info['name']}: {transcribed}", icon="🎙️")
+                    st.toast(f"🗣️ {transcribed}", icon="🎙️")
                 else:
-                    st.toast("Could not detect speech clearly. Please try again.", icon="⚠️")
+                    st.toast("Could not detect speech clearly.", icon="⚠️")
 
-# Main Orchestration
+# ====================== MAIN ORCHESTRATION ======================
 active_prompt = None
 if st.session_state.pending_prompt:
     active_prompt = st.session_state.pending_prompt
@@ -1629,8 +1345,6 @@ if active_prompt:
     with st.chat_message("assistant"):
         nlp_plan = advanced_nlp_agent(active_prompt)
         weather_data = pfz_data = alert_data = location_name = None
-        show_geofence = False
-        lat = lon = None
         agent_log = [f"NLP ({nlp_plan['intent']})"]
 
         if nlp_plan["intent"] in ["GREETING", "BOT_IDENTITY", "GRATITUDE", "NORMAL_CHAT"]:
@@ -1638,7 +1352,7 @@ if active_prompt:
             st.session_state.pfz_data = None
 
         if nlp_plan["intent"] == "SHOW_ALERTS":
-            agent_log.append("Real-Time Alert Agent")
+            agent_log.append("Real-Time Alert Agent (Coastal First)")
             st.session_state.show_alerts_panel = True
             render_active_alerts_panel(st.session_state.language)
 
@@ -1649,14 +1363,8 @@ if active_prompt:
                 location_name = f"{loc['name']}, {loc['state']}"
 
             weather_data = weather_agent(loc["lat"], loc["lon"])
-            agent_log.append("Weather + Ocean Agent")
-            render_full_ocean_meteo_card(weather_data, location_name)
-
-            show_geofence = True
-            lat = loc["lat"]
-            lon = loc["lon"]
-            agent_log.append("Geofencing Agent")
-            render_geofence_status(lat, lon, location_name)
+            agent_log.append("Weather Agent")
+            render_weather_card(weather_data, location_name)
 
             is_coastal = nlp_plan.get("is_coastal", False)
             alert_data = alert_agent(weather_data, location_name, st.session_state.language, is_coastal=is_coastal)
@@ -1669,20 +1377,20 @@ if active_prompt:
                 pfz_data = pfz_agent(loc, weather_data)
                 st.session_state.pfz_data = pfz_data
                 st.session_state.selected_zone_index = 0
-                agent_log.append("PFZ + Navigation + Geofences")
+                agent_log.append("PFZ + Navigation")
                 render_pfz_section(pfz_data)
             else:
                 st.session_state.map_location = None
                 st.session_state.pfz_data = None
 
-        agent_log.append(f"Response Agent ({st.session_state.language})")
+        agent_log.append("Response Agent")
         final_answer = response_agent(active_prompt, nlp_plan, weather_data, pfz_data, alert_data, st.session_state.language)
         st.markdown(final_answer)
 
         should_speak = st.session_state.get("voice_mode_triggered", False) or st.session_state.get("auto_speak", False)
         render_tts_button(final_answer, st.session_state.language, auto_play=should_speak, msg_id="latest")
         st.session_state.voice_mode_triggered = False
-        st.caption(f"🧠 **Agents:** {' → '.join(agent_log)} | Language: **{st.session_state.language}**")
+        st.caption(f"🧠 **Agents:** {' → '.join(agent_log)}")
 
     st.session_state.messages.append({
         "role": "assistant",
@@ -1691,9 +1399,6 @@ if active_prompt:
         "pfz_data": pfz_data,
         "alert_data": alert_data,
         "location_name": location_name,
-        "show_geofence": show_geofence,
-        "lat": lat,
-        "lon": lon,
         "agent_log": agent_log
     })
     st.rerun()
